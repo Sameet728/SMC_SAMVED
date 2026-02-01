@@ -1274,25 +1274,27 @@
                 <span class="font-semibold text-slate-700">Medicine Stock Alerts</span>
               </div>
               <% 
-                // Calculate medicine alerts across all hospitals
-                let criticalMedicines = 0, lowStockMedicines = 0;
+                // Calculate medicine alerts across all hospitals - use a different variable name to avoid conflicts
+                let hospitalCriticalMedicines = 0, hospitalLowStockMedicines = 0;
                 hospitals.forEach(hospital => {
                   if (hospital.medicines) {
                     hospital.medicines.forEach(med => {
                       const stock = parseInt(med.stock) || 0;
                       const minLevel = parseInt(med.minLevel) || 10;
                       if (stock <= 0) {
-                        criticalMedicines++;
+                        hospitalCriticalMedicines++;
                       } else if (stock <= minLevel) {
-                        lowStockMedicines++;
+                        hospitalLowStockMedicines++;
                       }
                     });
                   }
                   // Fallback: use medicine alert counts if available
-                  if (hospital.criticalMedicineAlerts) criticalMedicines += hospital.criticalMedicineAlerts;
-                  if (hospital.lowStockMedicines) lowStockMedicines += hospital.lowStockMedicines;
+                  if (hospital.criticalMedicineAlerts) hospitalCriticalMedicines += hospital.criticalMedicineAlerts;
+                  if (hospital.lowStockMedicines) hospitalLowStockMedicines += hospital.lowStockMedicines;
                 });
-                const totalAlerts = criticalMedicines + lowStockMedicines;
+                // Use the lowStockMedicines from backend data if available, otherwise use calculated value
+                const totalLowStock = (typeof lowStockMedicines !== 'undefined' && lowStockMedicines.length !== undefined) ? lowStockMedicines.length : hospitalLowStockMedicines;
+                const totalAlerts = hospitalCriticalMedicines + totalLowStock;
               %>
               <span class="text-xs px-2 py-1 rounded-full <%= totalAlerts === 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' %>">
                 <%= totalAlerts %> Alerts
