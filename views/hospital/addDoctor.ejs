@@ -1,131 +1,165 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-50 antialiased">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Add Doctor | Smart Health</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Add Doctor | Smart Health</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Inter', 'sans-serif'] },
-          colors: {
-            brand: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 700: '#047857' }
-          }
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        // Matching the "Solapur Municipal Corp" Green/Teal theme
+                        brand: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 700: '#047857' },
+                        slate: { 850: '#1e293b' }
+                    }
+                }
+            }
         }
-      }
-    }
-  </script>
+    </script>
 </head>
 
-<body class="min-h-full py-8 px-4 sm:px-6 lg:px-8">
+<body class="flex flex-col min-h-full text-slate-600">
 
-  <div class="max-w-2xl mx-auto mb-6 flex items-center justify-between">
-    <div class="flex items-center space-x-2 text-sm text-slate-500">
-      <a href="/hospital/dashboard" class="hover:text-slate-900 transition-colors">Dashboard</a>
-      <svg class="h-4 w-4 text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
-      <a href="/hospital/doctors" class="hover:text-slate-900 transition-colors">Doctors</a>
-      <svg class="h-4 w-4 text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
-      <span class="text-slate-900 font-medium">Add New</span>
-    </div>
-    
-    <a href="/hospital/doctors" class="inline-flex items-center px-3 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-all">
-      Cancel
-    </a>
-  </div>
+    <%- include("../partials/navbar", { hospital: hospital || null }) %>
 
-  <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-    
-    <div class="px-6 py-5 border-b border-slate-100 bg-slate-50/50">
-      <h3 class="text-lg font-bold leading-6 text-slate-900">
-        Register New Doctor
-      </h3>
-      <p class="mt-1 text-sm text-slate-500">
-        Enter the professional details below to add a doctor to the hospital registry.
-      </p>
-    </div>
+    <main class="flex-grow py-10 px-4 sm:px-6 lg:px-8">
 
-    <div class="p-6 sm:p-8">
-      <form action="/hospital/doctors" method="POST" class="space-y-6">
+        <div class="max-w-3xl mx-auto mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <nav class="flex items-center space-x-2 text-sm text-slate-500">
+                <a href="/hospital/dashboard" class="hover:text-brand-600 transition-colors">Dashboard</a>
+                <svg class="h-4 w-4 text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                <a href="/hospital/doctors" class="hover:text-brand-600 transition-colors">Doctors</a>
+                <svg class="h-4 w-4 text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                <span class="text-slate-900 font-semibold bg-slate-100 px-2 py-0.5 rounded text-xs">Add New</span>
+            </nav>
 
-        <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
-          
-          <div class="sm:col-span-2">
-            <label class="block text-sm font-medium text-slate-700">Doctor Name</label>
-            <div class="mt-1">
-              <input type="text" name="name" required class="block w-full px-3 py-2.5 border border-slate-300 rounded-lg shadow-sm placeholder-slate-400 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 sm:text-sm transition-all">
-            </div>
-          </div>
-
-          <div class="sm:col-span-1">
-            <label class="block text-sm font-medium text-slate-700">Specialization</label>
-            <div class="mt-1">
-              <input type="text" name="specialization" required class="block w-full px-3 py-2.5 border border-slate-300 rounded-lg shadow-sm placeholder-slate-400 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 sm:text-sm transition-all">
-            </div>
-          </div>
-
-          <div class="sm:col-span-1">
-            <label class="block text-sm font-medium text-slate-700">
-              OPD Timings <span class="text-slate-400 font-normal text-xs ml-1">(e.g. 10 AM – 2 PM)</span>
-            </label>
-            <div class="mt-1">
-              <input type="text" name="opdTimings" required placeholder="10:00 AM - 05:00 PM" class="block w-full px-3 py-2.5 border border-slate-300 rounded-lg shadow-sm placeholder-slate-400 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 sm:text-sm transition-all">
-            </div>
-          </div>
-
+            <a href="/hospital/doctors" class="inline-flex items-center justify-center px-4 py-2 border border-slate-300 shadow-sm text-xs font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-all">
+                Cancel
+            </a>
         </div>
 
-        <div class="relative py-2">
-          <div class="absolute inset-0 flex items-center" aria-hidden="true">
-            <div class="w-full border-t border-slate-100"></div>
-          </div>
-          <div class="relative flex justify-center">
-            <span class="px-2 bg-white text-xs font-medium text-slate-400 uppercase tracking-wider">Optional Details</span>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
-          
-          <div class="sm:col-span-1">
-            <label class="block text-sm font-medium text-slate-700">Phone Number</label>
-            <div class="mt-1 relative rounded-md shadow-sm">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span class="text-slate-400 sm:text-sm">📞</span>
-              </div>
-              <input type="text" name="phone" class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 sm:text-sm transition-all">
+        <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            
+            <div class="px-6 py-5 border-b border-slate-100 bg-slate-50/50 flex items-start gap-4">
+                <div class="flex-shrink-0 p-2 bg-brand-50 rounded-lg text-brand-600 hidden sm:block">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold leading-6 text-slate-900">
+                        Register New Doctor
+                    </h3>
+                    <p class="mt-1 text-sm text-slate-500">
+                        Enter the professional details below to add a doctor to the hospital registry.
+                    </p>
+                </div>
             </div>
-          </div>
 
-          <div class="sm:col-span-1">
-            <label class="block text-sm font-medium text-slate-700">Experience</label>
-            <div class="mt-1 relative rounded-md shadow-sm">
-              <input type="number" name="experienceYears" class="block w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 sm:text-sm transition-all" placeholder="Years">
-              <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <span class="text-slate-400 sm:text-sm">Yrs</span>
-              </div>
+            <div class="p-6 sm:p-8">
+                <form action="/hospital/doctors" method="POST" class="space-y-6">
+
+                    <div class="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
+                        
+                        <div class="sm:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700">Doctor Name <span class="text-red-500">*</span></label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-slate-400 font-medium text-sm">Dr.</span>
+                                </div>
+                                <input type="text" name="name" required 
+                                    class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 sm:text-sm transition-all placeholder-slate-400" 
+                                    placeholder="Full Name">
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-1">
+                            <label class="block text-sm font-medium text-slate-700">Specialization <span class="text-red-500">*</span></label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                                </div>
+                                <input type="text" name="specialization" required 
+                                    class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 sm:text-sm transition-all placeholder-slate-400" 
+                                    placeholder="e.g. Cardiologist">
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-1">
+                            <label class="block text-sm font-medium text-slate-700">
+                                OPD Timings <span class="text-slate-400 font-normal text-xs ml-1">(e.g. 10 AM – 2 PM)</span>
+                            </label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </div>
+                                <input type="text" name="opdTimings" required 
+                                    class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 sm:text-sm transition-all placeholder-slate-400" 
+                                    placeholder="10:00 AM - 05:00 PM">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="relative py-4">
+                        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                            <div class="w-full border-t border-slate-100"></div>
+                        </div>
+                        <div class="relative flex justify-center">
+                            <span class="px-3 bg-white text-xs font-semibold text-slate-400 uppercase tracking-wider">Additional Details</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
+                        
+                        <div class="sm:col-span-1">
+                            <label class="block text-sm font-medium text-slate-700">Phone Number</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                </div>
+                                <input type="text" name="phone" 
+                                    class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 sm:text-sm transition-all placeholder-slate-400" 
+                                    placeholder="+91 99999 99999">
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-1">
+                            <label class="block text-sm font-medium text-slate-700">Experience</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <input type="number" name="experienceYears" 
+                                    class="block w-full pl-3 pr-10 py-2.5 border border-slate-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 sm:text-sm transition-all placeholder-slate-400" 
+                                    placeholder="0">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="text-slate-400 text-xs font-medium">YEARS</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="pt-6 flex items-center justify-end gap-3 border-t border-slate-100 mt-6">
+                        <a href="/hospital/doctors" class="px-5 py-2.5 border border-slate-300 shadow-sm text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-all">
+                            Cancel
+                        </a>
+                        <button type="submit" class="px-6 py-2.5 border border-transparent shadow-md text-sm font-medium rounded-lg text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-all transform hover:-translate-y-0.5">
+                            Save Doctor
+                        </button>
+                    </div>
+
+                </form>
             </div>
-          </div>
-
         </div>
+    </main>
 
-        <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 mt-6">
-          <a href="/hospital/doctors" class="px-4 py-2 border border-slate-300 shadow-sm text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-all">
-            Cancel
-          </a>
-          <button type="submit" class="px-6 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-all transform hover:-translate-y-0.5">
-            Save Doctor
-          </button>
-        </div>
-
-      </form>
-    </div>
-  </div>
+    <%- include("../partials/footer") %>
 
 </body>
 </html>

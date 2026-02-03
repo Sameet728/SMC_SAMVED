@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <title>Login | SMC Smart Health</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -16,7 +16,7 @@
         extend: {
           fontFamily: { sans: ['Inter', 'sans-serif'] },
           colors: {
-            brand: { 600: '#059669', 700: '#047857' } // Professional Emerald
+            brand: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 700: '#047857', 900: '#064e3b' }
           }
         }
       }
@@ -24,55 +24,81 @@
   </script>
 </head>
 
-<body class="h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+<body class="h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
 
-  <div class="sm:mx-auto sm:w-full sm:max-w-md">
-    <div class="mx-auto h-12 w-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-      <svg class="h-8 w-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-      </svg>
+  <div class="absolute inset-0 z-0 opacity-[0.03]" 
+       style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 24px 24px;">
+  </div>
+  
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-brand-100 rounded-full blur-3xl opacity-50 -z-10 pointer-events-none"></div>
+
+  <div class="relative z-10 sm:mx-auto sm:w-full sm:max-w-[420px]">
+    
+    <div class="mx-auto h-14 w-14 bg-gradient-to-br from-brand-500 to-brand-700 rounded-2xl flex items-center justify-center shadow-lg shadow-brand-500/30 transform hover:scale-110 transition-transform duration-300">
+      <span class="text-white font-bold text-2xl">H</span>
     </div>
     
     <h2 class="mt-6 text-center text-3xl font-extrabold text-slate-900 tracking-tight">
-      SMC Smart Health
+      Welcome Back
     </h2>
     <p class="mt-2 text-center text-sm text-slate-600">
-      Secure access for hospital administration
+      Sign in to access the <span class="font-medium text-brand-600">SMC Dashboard</span>
     </p>
   </div>
 
-  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-    <div class="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 sm:rounded-xl sm:px-10 border border-slate-100">
+  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-[420px] relative z-10">
+    <div class="bg-white/80 backdrop-blur-xl py-8 px-4 shadow-2xl shadow-slate-200/50 sm:rounded-2xl sm:px-10 border border-white/50 ring-1 ring-slate-900/5">
       
+      <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+        <div class="mb-5 rounded-lg bg-red-50 p-4 border border-red-100 flex items-start">
+          <svg class="h-5 w-5 text-red-400 mt-0.5 mr-3" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+          </svg>
+          <div class="text-sm text-red-700 font-medium"><%= error %></div>
+        </div>
+      <% } %>
+
       <form class="space-y-6" action="/login" method="POST">
         
         <div>
-          <label for="email" class="block text-sm font-medium text-slate-700">
-            Email address
-          </label>
-          <div class="mt-1">
+          <label for="email" class="block text-sm font-semibold text-slate-700">Email Address</label>
+          <div class="mt-1.5 relative rounded-md shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+              </svg>
+            </div>
             <input id="email" name="email" type="email" autocomplete="email" required 
-              class="appearance-none block w-full px-3 py-2.5 border border-slate-300 rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-transparent sm:text-sm transition-all duration-200">
+                   placeholder="doctor@hospital.com"
+                   class="appearance-none block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 sm:text-sm transition-all duration-200 bg-slate-50 focus:bg-white">
           </div>
         </div>
 
         <div>
-          <label for="password" class="block text-sm font-medium text-slate-700">
-            Password
-          </label>
-          <div class="mt-1">
+          <div class="flex items-center justify-between">
+            <label for="password" class="block text-sm font-semibold text-slate-700">Password</label>
+            <div class="text-sm">
+              <a href="#" class="font-medium text-brand-600 hover:text-brand-500 transition-colors">Forgot password?</a>
+            </div>
+          </div>
+          <div class="mt-1.5 relative rounded-md shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
             <input id="password" name="password" type="password" autocomplete="current-password" required 
-              class="appearance-none block w-full px-3 py-2.5 border border-slate-300 rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-transparent sm:text-sm transition-all duration-200">
+                   placeholder="••••••••"
+                   class="appearance-none block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 sm:text-sm transition-all duration-200 bg-slate-50 focus:bg-white">
           </div>
         </div>
 
         <div>
           <button type="submit" 
-            class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-600 transition-all duration-200 transform hover:-translate-y-0.5">
-            Sign in
+                  class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-md text-sm font-bold text-white bg-slate-900 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200 transform hover:-translate-y-0.5">
+            Sign In
           </button>
         </div>
-
       </form>
 
       <div class="mt-6">
@@ -81,26 +107,22 @@
             <div class="w-full border-t border-slate-200"></div>
           </div>
           <div class="relative flex justify-center text-sm">
-            <span class="px-2 bg-white text-slate-500">
-              New to the platform?
-            </span>
+            <span class="px-2 bg-white text-slate-500">Don't have an account?</span>
           </div>
         </div>
 
-        <div class="mt-6 grid grid-cols-1 gap-3">
+        <div class="mt-6">
           <a href="/register" 
-            class="w-full inline-flex justify-center py-2.5 px-4 border border-slate-300 rounded-lg shadow-sm bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-            Create an account
+             class="w-full inline-flex justify-center items-center py-2.5 px-4 border border-slate-200 rounded-lg shadow-sm bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-600 hover:border-emerald-200 transition-all duration-200">
+             Register New Hospital
           </a>
         </div>
       </div>
-
     </div>
     
-    <p class="mt-8 text-center text-xs text-slate-400">
-      &copy; 2025 Smart Health Corporation. All rights reserved.
+    <p class="mt-8 text-center text-xs font-medium text-slate-400">
+      &copy; <%= new Date().getFullYear() %> SMC Smart Health. <br>Secure & Confidential.
     </p>
   </div>
-
 </body>
 </html>

@@ -1,369 +1,366 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-50 antialiased">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Hospital Resources | Smart Health</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Resources | <%= hospital.hospitalName %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Inter', 'sans-serif'] },
-          colors: {
-            brand: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 700: '#047857' }
-          }
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 700: '#047857', 900: '#064e3b' },
+                        slate: { 850: '#1e293b' }
+                    }
+                }
+            }
         }
-      }
-    }
-  </script>
-  
-  <style>
-    /* Modal Transitions */
-    .modal { transition: opacity 0.2s ease-in-out; }
-    .modal-active { opacity: 1; pointer-events: auto; }
-    .modal-inactive { opacity: 0; pointer-events: none; }
+    </script>
     
-    /* Scale effect for modal panel */
-    .modal-panel { transition: transform 0.2s ease-out; }
-    .modal-active .modal-panel { transform: scale(1); }
-    .modal-inactive .modal-panel { transform: scale(0.95); }
-  </style>
+    <style>
+        /* Modal Transitions */
+        .modal { transition: opacity 0.2s ease-in-out; }
+        .modal-active { opacity: 1; pointer-events: auto; }
+        .modal-inactive { opacity: 0; pointer-events: none; }
+        
+        /* Scale effect for modal panel */
+        .modal-panel { transition: transform 0.2s ease-out; }
+        .modal-active .modal-panel { transform: scale(1); }
+        .modal-inactive .modal-panel { transform: scale(0.95); }
+    </style>
 </head>
 
-<body class="min-h-full pb-12">
+<body class="flex flex-col min-h-full text-slate-600">
 
-<nav class="bg-white border-b border-slate-200 sticky top-0 z-30">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between h-16">
-      <div class="flex items-center gap-3">
-        <div class="h-8 w-8 bg-brand-100 rounded-lg flex items-center justify-center">
-             <span class="text-brand-600 font-bold text-lg">R</span>
+    <%- include("../partials/navbar", { hospital: hospital || null }) %>
+
+    <main class="flex-grow py-8 px-4 sm:px-6 lg:px-8 space-y-8">
+        <div class="max-w-7xl mx-auto space-y-8">
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                
+                <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                            Medical Equipment
+                        </h3>
+                        <p class="text-sm text-slate-500">Manage infrastructure inventory and maintenance status.</p>
+                    </div>
+
+                    <form action="/hospital/equipment" method="POST" class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                        <div class="flex flex-col sm:flex-row gap-3 items-end">
+                            <div class="flex-grow w-full sm:w-auto">
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Equipment Name</label>
+                                <input name="name" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500 shadow-sm placeholder-slate-400" placeholder="e.g. Ventilator X200" required>
+                            </div>
+                            <div class="w-full sm:w-24">
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Qty</label>
+                                <input name="quantity" type="number" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500 shadow-sm placeholder-slate-400" placeholder="0" required>
+                            </div>
+                            <div class="w-full sm:w-48">
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Condition</label>
+                                <select name="condition" class="block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500 shadow-sm text-slate-700">
+                                    <option value="working">Working</option>
+                                    <option value="maintenance">Maintenance</option>
+                                    <option value="out_of_order">Out of Order</option>
+                                </select>
+                            </div>
+                            <div class="w-full sm:w-auto">
+                                <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-slate-900 hover:bg-slate-800 transition-colors shadow-sm">
+                                    Add Item
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider w-12">#</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Qty</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Condition</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Last Updated</th>
+                                <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-slate-200">
+                            <% if (equipments.length === 0) { %>
+                                <tr>
+                                    <td colspan="6" class="px-6 py-8 text-center text-sm text-slate-500 italic">No equipment registered yet.</td>
+                                </tr>
+                            <% } %>
+                            <% equipments.forEach((e, i) => { %>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-400 font-mono"><%= i + 1 %></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900"><%= e.name %></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-mono"><%= e.quantity %></td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="status-badge inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border">
+                                            <%= e.condition %>
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-500"><%= e.lastUpdated ? e.lastUpdated.toDateString() : "—" %></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                                        <button onclick="openModal('editEquipment<%= e._id %>')" class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-md text-xs font-medium transition-colors">
+                                            Edit
+                                        </button>
+                                        <form action="/hospital/equipment/<%= e._id %>/delete" method="POST" class="inline-block">
+                                            <button type="submit" onclick="return confirm('Delete this equipment?')" class="text-rose-600 hover:text-rose-900 bg-rose-50 hover:bg-rose-100 px-3 py-1 rounded-md text-xs font-medium transition-colors">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                
+                <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                            Pharmacy Stock
+                        </h3>
+                        <p class="text-sm text-slate-500">Track medicine availability and stock levels.</p>
+                    </div>
+
+                    <form action="/hospital/medicine" method="POST" class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                        <div class="flex flex-col sm:flex-row gap-3 items-end">
+                            <div class="flex-grow w-full sm:w-auto">
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Medicine Name</label>
+                                <input name="name" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500 shadow-sm placeholder-slate-400" placeholder="e.g. Paracetamol 500mg" required>
+                            </div>
+                            <div class="w-full sm:w-24">
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Qty</label>
+                                <input name="quantity" type="number" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500 shadow-sm placeholder-slate-400" placeholder="0" required>
+                            </div>
+                            <div class="w-full sm:w-24">
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Unit</label>
+                                <input name="unit" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500 shadow-sm placeholder-slate-400" placeholder="Box/Vial">
+                            </div>
+                            <div class="w-full sm:w-40">
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Status</label>
+                                <select name="status" class="block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500 shadow-sm text-slate-700">
+                                    <option value="adequate">Adequate</option>
+                                    <option value="low">Low Stock</option>
+                                    <option value="out_of_stock">Out of Stock</option>
+                                </select>
+                            </div>
+                            <div class="w-full sm:w-auto">
+                                <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 transition-colors shadow-sm">
+                                    Add Stock
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider w-12">#</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Qty</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Unit</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Updated</th>
+                                <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-slate-200">
+                            <% if (medicines.length === 0) { %>
+                                <tr>
+                                    <td colspan="7" class="px-6 py-8 text-center text-sm text-slate-500 italic">No medicines in stock.</td>
+                                </tr>
+                            <% } %>
+                            <% medicines.forEach((m, i) => { %>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-400 font-mono"><%= i + 1 %></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900"><%= m.name %></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-mono"><%= m.quantity %></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500"><%= m.unit || "—" %></td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="status-badge inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border">
+                                            <%= m.status %>
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-500"><%= m.lastUpdated ? m.lastUpdated.toDateString() : "—" %></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                                        <button onclick="openModal('editMedicine<%= m._id %>')" class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-md text-xs font-medium transition-colors">
+                                            Edit
+                                        </button>
+                                        <form action="/hospital/medicine/<%= m._id %>/delete" method="POST" class="inline-block">
+                                            <button type="submit" onclick="return confirm('Delete this medicine?')" class="text-rose-600 hover:text-rose-900 bg-rose-50 hover:bg-rose-100 px-3 py-1 rounded-md text-xs font-medium transition-colors">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
-        <span class="font-bold text-slate-900 text-lg tracking-tight">
-          <%= hospital.hospitalName %> <span class="text-slate-400 font-normal">/ Resources</span>
-        </span>
-      </div>
-      <div class="flex items-center">
-        <a href="/hospital/dashboard" class="inline-flex items-center px-3 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-all">
-          <svg class="h-4 w-4 mr-1.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-          Back to Dashboard
-        </a>
-      </div>
-    </div>
-  </div>
-</nav>
+    </main>
 
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <%- include("../partials/footer") %>
 
-  <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-    
-    <div class="p-6 border-b border-slate-100 bg-slate-50/50">
-      <div class="mb-4">
-        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-          <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-          Medical Equipment
-        </h3>
-        <p class="text-sm text-slate-500">Manage infrastructure inventory and maintenance status.</p>
-      </div>
+    <% equipments.forEach(e => { %>
+        <div id="editEquipment<%= e._id %>" class="modal modal-inactive fixed inset-0 z-50 flex items-center justify-center">
+            <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal('editEquipment<%= e._id %>')"></div>
+            
+            <div class="modal-panel relative bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden z-10 transform transition-all">
+                <form action="/hospital/equipment/<%= e._id %>/edit" method="POST">
+                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-slate-900">Edit Equipment</h3>
+                        <button type="button" onclick="closeModal('editEquipment<%= e._id %>')" class="text-slate-400 hover:text-slate-500 focus:outline-none">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+                    
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                            <input name="name" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500 shadow-sm" value="<%= e.name %>" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Quantity</label>
+                            <input name="quantity" type="number" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500 shadow-sm" value="<%= e.quantity %>" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Condition</label>
+                            <select name="condition" class="block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500 shadow-sm">
+                                <option value="working" <%= e.condition === 'working' ? 'selected' : '' %>>Working</option>
+                                <option value="maintenance" <%= e.condition === 'maintenance' ? 'selected' : '' %>>Maintenance</option>
+                                <option value="out_of_order" <%= e.condition === 'out_of_order' ? 'selected' : '' %>>Out of Order</option>
+                            </select>
+                        </div>
+                    </div>
 
-      <form action="/hospital/equipment" method="POST" class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-        <div class="flex flex-col sm:flex-row gap-3 items-end">
-          <div class="flex-grow w-full sm:w-auto">
-            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Equipment Name</label>
-            <input name="name" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500" placeholder="e.g. Ventilator X200" required>
-          </div>
-          <div class="w-full sm:w-24">
-             <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Qty</label>
-             <input name="quantity" type="number" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500" placeholder="0" required>
-          </div>
-          <div class="w-full sm:w-48">
-             <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Condition</label>
-             <select name="condition" class="block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500">
-                <option value="working">Working</option>
-                <option value="maintenance">Maintenance</option>
-                <option value="out_of_order">Out of Order</option>
-             </select>
-          </div>
-          <div class="w-full sm:w-auto">
-            <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-slate-900 hover:bg-slate-800 transition-colors">
-              Add Item
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-slate-200">
-        <thead class="bg-slate-50">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider w-12">#</th>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Name</th>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Qty</th>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Condition</th>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Last Updated</th>
-            <th class="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-slate-200">
-          <% equipments.forEach((e, i) => { %>
-            <tr class="hover:bg-slate-50 transition-colors">
-              <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-400 font-mono"><%= i + 1 %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900"><%= e.name %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-mono"><%= e.quantity %></td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="status-badge inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border">
-                  <%= e.condition %>
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-500"><%= e.lastUpdated ? e.lastUpdated.toDateString() : "—" %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                <button onclick="openModal('editEquipment<%= e._id %>')" class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-md text-xs font-medium transition-colors">
-                  Edit
-                </button>
-                <form action="/hospital/equipment/<%= e._id %>/delete" method="POST" class="inline-block">
-                  <button type="submit" onclick="return confirm('Delete this equipment?')" class="text-rose-600 hover:text-rose-900 bg-rose-50 hover:bg-rose-100 px-3 py-1 rounded-md text-xs font-medium transition-colors">
-                    Delete
-                  </button>
+                    <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+                        <button type="button" onclick="closeModal('editEquipment<%= e._id %>')" class="px-4 py-2 border border-slate-300 rounded-md text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors">Cancel</button>
+                        <button type="submit" class="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 transition-colors shadow-sm">Save Changes</button>
+                    </div>
                 </form>
-              </td>
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-    
-    <div class="p-6 border-b border-slate-100 bg-slate-50/50">
-      <div class="mb-4">
-        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-          <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-          Pharmacy Stock
-        </h3>
-        <p class="text-sm text-slate-500">Track medicine availability and stock levels.</p>
-      </div>
-
-      <form action="/hospital/medicine" method="POST" class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-        <div class="flex flex-col sm:flex-row gap-3 items-end">
-          <div class="flex-grow w-full sm:w-auto">
-            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Medicine Name</label>
-            <input name="name" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500" placeholder="e.g. Paracetamol 500mg" required>
-          </div>
-          <div class="w-full sm:w-24">
-             <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Qty</label>
-             <input name="quantity" type="number" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500" placeholder="0" required>
-          </div>
-          <div class="w-full sm:w-24">
-             <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Unit</label>
-             <input name="unit" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500" placeholder="Box/Vial">
-          </div>
-          <div class="w-full sm:w-40">
-             <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Status</label>
-             <select name="status" class="block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500">
-                <option value="adequate">Adequate</option>
-                <option value="low">Low Stock</option>
-                <option value="out_of_stock">Out of Stock</option>
-             </select>
-          </div>
-          <div class="w-full sm:w-auto">
-            <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 transition-colors">
-              Add Stock
-            </button>
-          </div>
+            </div>
         </div>
-      </form>
-    </div>
+    <% }) %>
 
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-slate-200">
-        <thead class="bg-slate-50">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider w-12">#</th>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Name</th>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Qty</th>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Unit</th>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Updated</th>
-            <th class="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-slate-200">
-          <% medicines.forEach((m, i) => { %>
-            <tr class="hover:bg-slate-50 transition-colors">
-              <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-400 font-mono"><%= i + 1 %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900"><%= m.name %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-mono"><%= m.quantity %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500"><%= m.unit || "—" %></td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="status-badge inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border">
-                  <%= m.status %>
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-500"><%= m.lastUpdated ? m.lastUpdated.toDateString() : "—" %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                <button onclick="openModal('editMedicine<%= m._id %>')" class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-md text-xs font-medium transition-colors">
-                  Edit
-                </button>
-                <form action="/hospital/medicine/<%= m._id %>/delete" method="POST" class="inline-block">
-                  <button type="submit" onclick="return confirm('Delete this medicine?')" class="text-rose-600 hover:text-rose-900 bg-rose-50 hover:bg-rose-100 px-3 py-1 rounded-md text-xs font-medium transition-colors">
-                    Delete
-                  </button>
+    <% medicines.forEach(m => { %>
+        <div id="editMedicine<%= m._id %>" class="modal modal-inactive fixed inset-0 z-50 flex items-center justify-center">
+            <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal('editMedicine<%= m._id %>')"></div>
+            
+            <div class="modal-panel relative bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden z-10 transform transition-all">
+                <form action="/hospital/medicine/<%= m._id %>/edit" method="POST">
+                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-slate-900">Edit Medicine</h3>
+                        <button type="button" onclick="closeModal('editMedicine<%= m._id %>')" class="text-slate-400 hover:text-slate-500 focus:outline-none">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+                    
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                            <input name="name" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500 shadow-sm" value="<%= m.name %>" required>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Quantity</label>
+                                <input name="quantity" type="number" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500 shadow-sm" value="<%= m.quantity %>" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Unit</label>
+                                <input name="unit" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500 shadow-sm" value="<%= m.unit %>">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Status</label>
+                            <select name="status" class="block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500 shadow-sm">
+                                <option value="adequate" <%= m.status === 'adequate' ? 'selected' : '' %>>Adequate</option>
+                                <option value="low" <%= m.status === 'low' ? 'selected' : '' %>>Low</option>
+                                <option value="out_of_stock" <%= m.status === 'out_of_stock' ? 'selected' : '' %>>Out of Stock</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+                        <button type="button" onclick="closeModal('editMedicine<%= m._id %>')" class="px-4 py-2 border border-slate-300 rounded-md text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors">Cancel</button>
+                        <button type="submit" class="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 transition-colors shadow-sm">Save Changes</button>
+                    </div>
                 </form>
-              </td>
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-</main>
-
-<% equipments.forEach(e => { %>
-<div id="editEquipment<%= e._id %>" class="modal modal-inactive fixed inset-0 z-50 flex items-center justify-center">
-  <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('editEquipment<%= e._id %>')"></div>
-  
-  <div class="modal-panel relative bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden z-10">
-    <form action="/hospital/equipment/<%= e._id %>/edit" method="POST">
-      <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-        <h3 class="text-lg font-bold text-slate-900">Edit Equipment</h3>
-        <button type="button" onclick="closeModal('editEquipment<%= e._id %>')" class="text-slate-400 hover:text-slate-500">
-           <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-        </button>
-      </div>
-      
-      <div class="p-6 space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
-          <input name="name" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500" value="<%= e.name %>" required>
+            </div>
         </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Quantity</label>
-          <input name="quantity" type="number" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500" value="<%= e.quantity %>" required>
-        </div>
-        <div>
-           <label class="block text-sm font-medium text-slate-700 mb-1">Condition</label>
-           <select name="condition" class="block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500">
-              <option value="working" <%= e.condition === 'working' ? 'selected' : '' %>>Working</option>
-              <option value="maintenance" <%= e.condition === 'maintenance' ? 'selected' : '' %>>Maintenance</option>
-              <option value="out_of_order" <%= e.condition === 'out_of_order' ? 'selected' : '' %>>Out of Order</option>
-           </select>
-        </div>
-      </div>
+    <% }) %>
 
-      <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
-        <button type="button" onclick="closeModal('editEquipment<%= e._id %>')" class="px-4 py-2 border border-slate-300 rounded-md text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors">Cancel</button>
-        <button type="submit" class="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 transition-colors">Save Changes</button>
-      </div>
-    </form>
-  </div>
-</div>
-<% }) %>
+    <script>
+        // 1. MODAL LOGIC (No Bootstrap Needed)
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) {
+                modal.classList.remove('modal-inactive');
+                modal.classList.add('modal-active');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            }
+        }
 
-<% medicines.forEach(m => { %>
-<div id="editMedicine<%= m._id %>" class="modal modal-inactive fixed inset-0 z-50 flex items-center justify-center">
-  <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('editMedicine<%= m._id %>')"></div>
-  
-  <div class="modal-panel relative bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden z-10">
-    <form action="/hospital/medicine/<%= m._id %>/edit" method="POST">
-      <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-        <h3 class="text-lg font-bold text-slate-900">Edit Medicine</h3>
-        <button type="button" onclick="closeModal('editMedicine<%= m._id %>')" class="text-slate-400 hover:text-slate-500">
-           <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-        </button>
-      </div>
-      
-      <div class="p-6 space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
-          <input name="name" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500" value="<%= m.name %>" required>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Quantity</label>
-            <input name="quantity" type="number" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500" value="<%= m.quantity %>" required>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Unit</label>
-            <input name="unit" class="block w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500" value="<%= m.unit %>">
-          </div>
-        </div>
-        <div>
-           <label class="block text-sm font-medium text-slate-700 mb-1">Status</label>
-           <select name="status" class="block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500">
-              <option value="adequate" <%= m.status === 'adequate' ? 'selected' : '' %>>Adequate</option>
-              <option value="low" <%= m.status === 'low' ? 'selected' : '' %>>Low</option>
-              <option value="out_of_stock" <%= m.status === 'out_of_stock' ? 'selected' : '' %>>Out of Stock</option>
-           </select>
-        </div>
-      </div>
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) {
+                modal.classList.remove('modal-active');
+                modal.classList.add('modal-inactive');
+                document.body.style.overflow = '';
+            }
+        }
 
-      <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
-        <button type="button" onclick="closeModal('editMedicine<%= m._id %>')" class="px-4 py-2 border border-slate-300 rounded-md text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors">Cancel</button>
-        <button type="submit" class="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 transition-colors">Save Changes</button>
-      </div>
-    </form>
-  </div>
-</div>
-<% }) %>
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                document.querySelectorAll('.modal-active').forEach(modal => {
+                    closeModal(modal.id);
+                });
+            }
+        });
 
-<script>
-  // 1. MODAL LOGIC (No Bootstrap Needed)
-  function openModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if(modal) {
-      modal.classList.remove('modal-inactive');
-      modal.classList.add('modal-active');
-      document.body.style.overflow = 'hidden'; // Prevent background scrolling
-    }
-  }
-
-  function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if(modal) {
-      modal.classList.remove('modal-active');
-      modal.classList.add('modal-inactive');
-      document.body.style.overflow = '';
-    }
-  }
-
-  // Close modal on Escape key
-  document.addEventListener('keydown', function(event) {
-    if (event.key === "Escape") {
-      document.querySelectorAll('.modal-active').forEach(modal => {
-        closeModal(modal.id);
-      });
-    }
-  });
-
-  // 2. AUTO-COLORIZE BADGES
-  // Scans all .status-badge elements and applies colors based on text content
-  document.addEventListener("DOMContentLoaded", () => {
-    const badges = document.querySelectorAll(".status-badge");
-    badges.forEach(b => {
-      const text = b.innerText.toLowerCase().trim().replace(/_/g, " ");
-      b.innerText = text.charAt(0).toUpperCase() + text.slice(1); // Capitalize nicely
-      
-      if (text.includes("working") || text.includes("adequate")) {
-        b.classList.add("bg-emerald-100", "text-emerald-800", "border-emerald-200");
-      } else if (text.includes("maintenance") || text.includes("low")) {
-        b.classList.add("bg-amber-100", "text-amber-800", "border-amber-200");
-      } else if (text.includes("order") || text.includes("stock")) {
-        b.classList.add("bg-rose-100", "text-rose-800", "border-rose-200");
-      } else {
-        b.classList.add("bg-slate-100", "text-slate-800", "border-slate-200");
-      }
-    });
-  });
-</script>
+        // 2. AUTO-COLORIZE BADGES
+        // Scans all .status-badge elements and applies colors based on text content
+        document.addEventListener("DOMContentLoaded", () => {
+            const badges = document.querySelectorAll(".status-badge");
+            badges.forEach(b => {
+                const text = b.innerText.toLowerCase().trim().replace(/_/g, " ");
+                b.innerText = text.charAt(0).toUpperCase() + text.slice(1); // Capitalize nicely
+                
+                if (text.includes("working") || text.includes("adequate")) {
+                    b.classList.add("bg-emerald-100", "text-emerald-800", "border-emerald-200");
+                } else if (text.includes("maintenance") || text.includes("low")) {
+                    b.classList.add("bg-amber-100", "text-amber-800", "border-amber-200");
+                } else if (text.includes("order") || text.includes("stock")) {
+                    b.classList.add("bg-rose-100", "text-rose-800", "border-rose-200");
+                } else {
+                    b.classList.add("bg-slate-100", "text-slate-800", "border-slate-200");
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>

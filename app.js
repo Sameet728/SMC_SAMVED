@@ -16,6 +16,25 @@ app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static("public"));
+const Hospital = require("./models/Hospital");
+
+app.use(async (req, res, next) => {
+  try {
+    if (req.user && req.user.role === "hospital") {
+      res.locals.hospital = await Hospital.findOne({
+        user: req.user._id,
+      });
+    } else {
+      res.locals.hospital = null;
+    }
+  } catch (err) {
+    console.error("Navbar hospital load error:", err);
+    res.locals.hospital = null;
+  }
+  next();
+});
+
+
 
 app.use(
   session({

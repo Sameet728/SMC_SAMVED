@@ -1,0 +1,155 @@
+<nav class="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-slate-200/60 transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+
+      <div class="flex items-center gap-8">
+        <div class="flex items-center flex-shrink-0 cursor-pointer" onclick="window.location.href='/hospital/dashboard'">
+          <div class="h-9 w-9 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 mr-3 transform hover:scale-105 transition-transform duration-200">
+            <span class="text-white font-bold text-xl">H</span>
+          </div>
+          <span class="font-bold text-slate-800 text-lg tracking-tight hover:text-emerald-600 transition-colors">
+            <%= hospital && hospital.hospitalName ? hospital.hospitalName : "Hospital Dashboard" %>
+          </span>
+        </div>
+
+        <div class="hidden md:flex items-center space-x-1">
+          
+          <a href="/hospital/dashboard" class="nav-item px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+            Dashboard
+          </a>
+
+          <a href="/hospital/analytics" class="nav-item px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+            Analytics
+          </a>
+
+          <div class="relative group px-1">
+            <button class="nav-item dropdown-btn flex items-center px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none">
+              <span>Patients</span>
+              <svg class="ml-1.5 h-4 w-4 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            
+            <div class="absolute left-0 top-full h-2 w-full"></div>
+
+            <div class="absolute left-0 mt-2 w-56 opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 transition-all duration-200 ease-out z-50">
+              <div class="bg-white/90 backdrop-blur-xl border border-slate-100 rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden ring-1 ring-black/5 p-1">
+                <a href="/hospital/dashboard" class="block px-4 py-2.5 text-sm text-slate-600 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">View Patients</a>
+                <a href="/hospital/patients/new" class="block px-4 py-2.5 text-sm text-slate-600 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">Register Patient</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="relative group px-1">
+            <button class="nav-item dropdown-btn flex items-center px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none">
+              <span>Doctors</span>
+              <svg class="ml-1.5 h-4 w-4 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            
+            <div class="absolute left-0 top-full h-2 w-full"></div>
+
+            <div class="absolute left-0 mt-2 w-56 opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 transition-all duration-200 ease-out z-50">
+              <div class="bg-white/90 backdrop-blur-xl border border-slate-100 rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden ring-1 ring-black/5 p-1">
+                <a href="/hospital/doctors" class="block px-4 py-2.5 text-sm text-slate-600 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">All Doctors</a>
+                <a href="/hospital/doctors/new" class="block px-4 py-2.5 text-sm text-slate-600 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">Add Doctor</a>
+                <a href="/hospital/doctors/workload" class="block px-4 py-2.5 text-sm text-slate-600 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition-colors">Doctor Workload</a>
+              </div>
+            </div>
+          </div>
+
+          <a href="/hospital/resources" class="nav-item px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+            Resources
+          </a>
+        </div>
+      </div>
+
+      <div class="hidden md:flex items-center gap-3">
+        <a href="/hospital/edit" class="group px-4 py-2 text-xs font-semibold text-slate-600 border border-slate-200 rounded-full hover:border-emerald-500 hover:text-emerald-600 transition-all bg-white">
+          <span class="group-hover:hidden">Edit</span>
+          <span class="hidden group-hover:inline">Edit Hospital</span>
+        </a>
+        <a href="/logout" class="px-5 py-2 text-xs font-bold text-white bg-slate-900 rounded-full hover:bg-emerald-600 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+          Logout
+        </a>
+      </div>
+
+      <div class="flex items-center md:hidden">
+        <button onclick="toggleMenu()" class="p-2 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobileMenu" class="md:hidden hidden bg-white border-b border-slate-200">
+    <div class="px-4 py-4 space-y-2">
+      <a href="/hospital/dashboard" class="mobile-item block px-4 py-3 rounded-xl text-base font-medium text-slate-600 hover:bg-slate-50">Dashboard</a>
+      <a href="/hospital/analytics" class="mobile-item block px-4 py-3 rounded-xl text-base font-medium text-slate-600 hover:bg-slate-50">Analytics</a>
+      
+      <div class="pl-4 border-l-2 border-slate-100 ml-4 my-2 space-y-2">
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Management</p>
+        <a href="/hospital/doctors" class="mobile-item block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50">Doctors</a>
+        <a href="/hospital/patients/new" class="mobile-item block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50">Patients</a>
+      </div>
+
+      <div class="pt-4 mt-4 border-t border-slate-100 flex gap-3">
+        <a href="/hospital/edit" class="flex-1 text-center py-2.5 border border-slate-200 rounded-lg text-sm font-semibold text-slate-600">Edit</a>
+        <a href="/logout" class="flex-1 text-center py-2.5 bg-slate-900 rounded-lg text-sm font-semibold text-white">Logout</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  // 1. Mobile Menu Toggle
+  function toggleMenu() {
+    document.getElementById("mobileMenu").classList.toggle("hidden");
+  }
+
+  // 2. AUTOMATIC ACTIVE STATE LOGIC
+  document.addEventListener("DOMContentLoaded", () => {
+    const currentPath = window.location.pathname;
+
+    // --- STYLE CONFIGURATION ---
+    // The classes for an "Active" Pill
+    const activeClasses = ["bg-emerald-100", "text-emerald-700", "shadow-sm"];
+    // The classes to REMOVE when active (default hover states)
+    const inactiveClasses = ["text-slate-600", "hover:text-slate-900", "hover:bg-slate-100"];
+
+    // A. Handle Main Navbar Links
+    const navLinks = document.querySelectorAll(".nav-item");
+    
+    navLinks.forEach(link => {
+      // Check if this link is a dropdown button or a direct link
+      const href = link.getAttribute("href");
+      
+      // If it's a direct link
+      if (href) {
+        if (currentPath === href) {
+          link.classList.add(...activeClasses);
+          link.classList.remove(...inactiveClasses);
+        }
+      } 
+      // If it's a Dropdown Button (it has no href, but contains text like "Doctors")
+      else if (link.classList.contains("dropdown-btn")) {
+        const btnText = link.innerText.trim().toLowerCase(); // e.g., "doctors"
+        
+        // Check if the current URL contains this section (e.g. url is /hospital/doctors/new)
+        if (currentPath.includes(`/hospital/${btnText}`)) {
+          link.classList.add(...activeClasses);
+          link.classList.remove(...inactiveClasses);
+        }
+      }
+    });
+
+    // B. Handle Mobile Menu Links
+    const mobileLinks = document.querySelectorAll(".mobile-item");
+    mobileLinks.forEach(link => {
+      if (link.getAttribute("href") === currentPath) {
+        // Different style for mobile active state
+        link.classList.add("bg-emerald-50", "text-emerald-700");
+        link.classList.remove("text-slate-600", "hover:bg-slate-50");
+      }
+    });
+  });
+</script>

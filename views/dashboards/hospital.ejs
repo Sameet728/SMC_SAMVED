@@ -1,469 +1,462 @@
 <!DOCTYPE html>
-<html lang="en" class="antialiased bg-slate-50">
-<head>
-  <meta charset="UTF-8">
-  <title>Hospital Dashboard | Smart Health</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Inter', 'sans-serif'] },
-          colors: {
-            brand: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 700: '#047857' }
-          }
-        }
-      }
-    }
-  </script>
+<html lang="en" class="h-full bg-slate-50 antialiased">
 
-  <style>
-    /* Custom Scrollbar for a premium feel */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard | <%= hospital.hospitalName %></title>
     
-    /* Smooth transition for tab switching */
-    .tab-active { background-color: white; color: #0f172a; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); }
-    .tab-inactive { color: #64748b; background-color: transparent; }
-    .tab-inactive:hover { color: #0f172a; }
-  </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 700: '#047857', 900: '#064e3b' },
+                        slate: { 850: '#1e293b' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Tab Transitions */
+        .tab-active { background-color: white; color: #0f172a; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); }
+        .tab-inactive { color: #64748b; background-color: transparent; }
+        .tab-inactive:hover { color: #334155; }
+        
+        /* Dropdown transition */
+        .group:hover .group-hover\:visible { visibility: visible; }
+        .group:hover .group-hover\:opacity-100 { opacity: 1; }
+        .group:hover .group-hover\:translate-y-0 { transform: translateY(0); }
+    </style>
 </head>
 
-<body class="text-slate-600">
+<body class="h-full flex flex-col text-slate-600">
 
-<nav class="bg-white border-b border-slate-200 sticky top-0 z-50 backdrop-blur-md bg-opacity-90">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between h-16">
-      
-      <div class="flex">
-        <div class="flex-shrink-0 flex items-center">
-          <div class="h-8 w-8 bg-brand-100 rounded-lg flex items-center justify-center mr-3">
-             <span class="text-brand-600 font-bold text-lg">H</span>
-          </div>
-          <a class="font-bold text-slate-900 text-lg tracking-tight hover:text-brand-600 transition-colors" href="/hospital/dashboard">
-            <%= hospital.hospitalName %>
-          </a>
-        </div>
+    <%- include("../partials/navbar", { hospital: hospital || null }) %>
+    <main class="flex-grow bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        <div class="hidden md:ml-10 md:flex md:space-x-8">
-          <a href="/hospital/dashboard" class="border-b-2 border-brand-500 text-slate-900 inline-flex items-center px-1 pt-1 text-sm font-medium">Dashboard</a>
-          <a href="/hospital/analytics" class="border-b-2 border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 inline-flex items-center px-1 pt-1 text-sm font-medium transition-all">Analytics</a>
-          
-          <div class="relative inline-flex items-center px-1 pt-1 text-sm font-medium group cursor-pointer">
-            <span class="text-slate-500 group-hover:text-slate-700">Patients</span>
-            <div class="absolute left-0 top-14 w-48 bg-white border border-slate-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-left z-50">
-               <a class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-brand-600 first:rounded-t-lg" href="/hospital/dashboard">View Patients</a>
-               <a class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-brand-600 last:rounded-b-lg" href="/hospital/patients/new">Register Patient</a>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Hospital Overview</h2>
+                    <p class="text-sm text-slate-500 mt-1">Manage wards, bed availability, and patient flow.</p>
+                </div>
+                <a href="/hospital/patients/new" class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white transition-all bg-emerald-600 rounded-lg shadow-md hover:bg-emerald-700 hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    New Admission
+                </a>
             </div>
-          </div>
 
-          <div class="relative inline-flex items-center px-1 pt-1 text-sm font-medium group cursor-pointer">
-            <span class="text-slate-500 group-hover:text-slate-700">Doctors</span>
-            <div class="absolute left-0 top-14 w-48 bg-white border border-slate-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-left z-50">
-               <a class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-brand-600 first:rounded-t-lg" href="/hospital/doctors">All Doctors</a>
-               <a class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-brand-600" href="/hospital/doctors/new">Add Doctor</a>
-               <a class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-brand-600 last:rounded-b-lg" href="/hospital/doctors/workload">Doctor Workload</a>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Assigned Ward</p>
+                            <p class="mt-2 text-2xl font-bold text-slate-800"><%= hospital.ward %></p>
+                        </div>
+                        <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Capacity</p>
+                            <p class="mt-2 text-2xl font-bold text-slate-800"><%= totalBeds %></p>
+                        </div>
+                        <div class="p-3 bg-slate-100 text-slate-600 rounded-lg">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+                    <div class="absolute right-0 top-0 h-full w-1 bg-emerald-500"></div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Available Beds</p>
+                            <p class="mt-2 text-2xl font-bold text-emerald-700"><%= availableBeds %></p>
+                        </div>
+                        <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
 
-          <a href="/hospital/resources" class="border-b-2 border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 inline-flex items-center px-1 pt-1 text-sm font-medium transition-all">Resources</a>
-        </div>
-      </div>
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden min-h-[600px] flex flex-col">
+                
+                <div class="border-b border-slate-200 bg-slate-50/50 p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    
+                    <div class="bg-slate-200/60 p-1.5 rounded-lg inline-flex" id="tabSwitcher">
+                        <button onclick="switchTab('opd')" id="btnOpd" class="px-5 py-2 text-sm font-semibold rounded-md transition-all duration-200 tab-active focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            OPD Queue
+                        </button>
+                        <button onclick="switchTab('ipd')" id="btnIpd" class="px-5 py-2 text-sm font-semibold rounded-md transition-all duration-200 tab-inactive focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            IPD / Admitted
+                        </button>
+                        <button onclick="switchTab('appointments')" id="btnAppointments" class="px-5 py-2 text-sm font-semibold rounded-md transition-all duration-200 tab-inactive focus:outline-none focus:ring-2 focus:ring-emerald-500 flex items-center">
+                            Appointments
+                            <% const pendingCount=appointments.filter(a=> a.status === 'pending').length; %>
+                            <% if (pendingCount > 0) { %>
+                                <span class="ml-2 inline-flex items-center justify-center h-5 w-5 text-[10px] font-bold bg-red-500 text-white rounded-full">
+                                    <%= pendingCount %>
+                                </span>
+                            <% } %>
+                        </button>
+                    </div>
 
-      <div class="flex items-center space-x-3">
-        <a href="/hospital/edit" class="hidden sm:inline-flex items-center px-3 py-1.5 border border-slate-300 text-xs font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-all">
-          Edit Hospital
-        </a>
-        <a href="/logout" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-slate-800 hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-all shadow-sm">
-          Logout
-        </a>
-      </div>
-      
-    </div>
-  </div>
-</nav>
+                    <div id="filterContainer" class="flex flex-wrap items-center gap-2">
+                        
+                        <div id="opdFilters" class="flex flex-wrap items-center gap-2">
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide mr-1">View:</span>
+                            <button class="inline-flex items-center px-3 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 transition-colors" onclick="filterOPD('today')">Today</button>
+                            <button class="inline-flex items-center px-3 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 transition-colors" onclick="filterOPD('yesterday')">Yesterday</button>
+                            
+                            <input type="date" id="opdDate" onchange="filterOPD('date')" class="form-input text-xs border-slate-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 h-[32px] text-slate-600">
+                            
+                            <div class="h-5 w-px bg-slate-300 mx-2"></div>
+                            
+                            <button class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors border-emerald-100" onclick="exportCSV('opdTable','opd.csv')">
+                                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                Export CSV
+                            </button>
+                        </div>
 
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                        <div id="ipdFilters" class="hidden flex flex-wrap items-center gap-2">
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide mr-1">Status:</span>
+                            <button class="inline-flex items-center px-3 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50" onclick="filterIPD('admitted')">Admitted</button>
+                            <button class="inline-flex items-center px-3 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50" onclick="filterIPD('discharged')">Discharged</button>
+                            <button class="inline-flex items-center px-3 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50" onclick="filterIPD('all')">All</button>
+                            
+                            <div class="h-5 w-px bg-slate-300 mx-2"></div>
+                            
+                            <button class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border-emerald-100" onclick="exportCSV('ipdTable','ipd.csv')">
+                                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                Export CSV
+                            </button>
+                        </div>
 
-  <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8">
-    <div class="p-6 sm:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-      
-      <div class="flex-1">
-        <h5 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-          Hospital Overview
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-100 text-brand-800">
-            Active
-          </span>
-        </h5>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Ward</p>
-                <p class="mt-1 text-lg font-bold text-slate-800"><%= hospital.ward %></p>
+                        <div id="appointmentFilters" class="hidden flex flex-wrap items-center gap-2">
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide mr-1">Status:</span>
+                            <button class="inline-flex items-center px-3 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50" onclick="filterAppointments('pending')">Pending</button>
+                            <button class="inline-flex items-center px-3 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50" onclick="filterAppointments('confirmed')">Confirmed</button>
+                            <button class="inline-flex items-center px-3 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50" onclick="filterAppointments('completed')">Completed</button>
+                            <button class="inline-flex items-center px-3 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50" onclick="filterAppointments('all')">All</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="opdSection" class="w-full overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600">
+                        <thead class="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">#</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Patient Name</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Doctor</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Age/Sex</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Diagnosis</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Action</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">History</th>
+                            </tr>
+                        </thead>
+                        <tbody id="opdTable" class="divide-y divide-slate-100 bg-white">
+                            <% let i=0; %>
+                            <% patients.filter(p=> p.patientType === "OPD").forEach(p => { %>
+                            <tr class="hover:bg-slate-50 transition-colors group" data-date="<%= p.admissionDate ? p.admissionDate.toISOString().slice(0,10) : '' %>">
+                                <td class="px-6 py-4 font-mono text-xs text-slate-400 group-hover:text-emerald-600"><%= ++i %></td>
+                                <td class="px-6 py-4 font-medium text-slate-900"><%= p.name %></td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                                        <%= p.doctor ? p.doctor.name : "—" %>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4"><%= p.age %> / <%= p.gender %></td>
+                                <td class="px-6 py-4 text-slate-500"><%= p.disease %></td>
+                                <td class="px-6 py-4 text-slate-500"><%= p.admissionDate ? p.admissionDate.toDateString() : "—" %></td>
+                                <td class="px-6 py-4">
+                                    <a href="/hospital/patients/<%= p._id %>/prescription" class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md transition-all border shadow-sm <%= p.prescription ? 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' %>">
+                                        <% if (p.prescription) { %>
+                                            <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                            View Rx
+                                        <% } else { %>
+                                            <svg class="w-3.5 h-3.5 mr-1.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                            Add Rx
+                                        <% } %>
+                                    </a>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <a href="/hospital/patients/profile/<%= p.profile %>" class="text-emerald-600 hover:text-emerald-800 text-xs font-semibold hover:underline">View Profile &rarr;</a>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="ipdSection" class="hidden w-full overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600">
+                        <thead class="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">#</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Patient Name</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Doctor</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Diagnosis</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Admitted</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Discharged</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Status / Action</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Rx</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">History</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ipdTable" class="divide-y divide-slate-100 bg-white">
+                            <% let j=0; %>
+                            <% patients.filter(p=> p.patientType === "IPD").forEach(p => { %>
+                            <tr class="hover:bg-slate-50 transition-colors group" data-status="<%= p.dischargeDate ? 'discharged' : 'admitted' %>">
+                                <td class="px-6 py-4 font-mono text-xs text-slate-400 group-hover:text-emerald-600"><%= ++j %></td>
+                                <td class="px-6 py-4 font-medium text-slate-900"><%= p.name %></td>
+                                <td class="px-6 py-4"><%= p.doctor ? p.doctor.name : "—" %></td>
+                                <td class="px-6 py-4 text-slate-600"><%= p.disease %></td>
+                                <td class="px-6 py-4 text-slate-500"><%= p.admissionDate ? p.admissionDate.toDateString() : "—" %></td>
+                                <td class="px-6 py-4 text-slate-500">
+                                    <% if(p.dischargeDate) { %>
+                                        <span class="text-emerald-600 font-medium"><%= p.dischargeDate.toDateString() %></span>
+                                    <% } else { %>
+                                        <span class="text-slate-400">—</span>
+                                    <% } %>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <% if (!p.dischargeDate) { %>
+                                        <form action="/hospital/patients/<%= p._id %>/discharge" method="POST" class="inline-block">
+                                            <button class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-rose-700 bg-rose-50 hover:bg-rose-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 transition-colors border-rose-100">
+                                                Discharge Patient
+                                            </button>
+                                        </form>
+                                    <% } else { %>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-500 border border-slate-200">Discharged</span>
+                                    <% } %>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <a href="/hospital/patients/<%= p._id %>/prescription" class="text-slate-400 hover:text-emerald-600 transition-colors">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    </a>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <a href="/hospital/patients/profile/<%= p.profile %>" class="text-emerald-600 hover:text-emerald-800 text-xs font-semibold hover:underline">View Profile &rarr;</a>
+                                </td>
+                                
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="appointmentsSection" class="hidden w-full overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600">
+                        <thead class="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">#</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Patient Details</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Doctor</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Scheduled For</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Reason</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsTable" class="divide-y divide-slate-100 bg-white">
+                            <% let k=0; %>
+                            <% appointments.forEach(apt=> { %>
+                            <tr class="hover:bg-slate-50 transition-colors" data-status="<%= apt.status %>">
+                                <td class="px-6 py-4 font-mono text-xs text-slate-400"><%= ++k %></td>
+                                <td class="px-6 py-4">
+                                    <div class="font-medium text-slate-900"><%= apt.patientName %></div>
+                                    <div class="text-xs text-slate-400 mt-0.5"><%= apt.patientAge %>y • <%= apt.patientGender %> • <%= apt.patientPhone %></div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800">
+                                        <%= apt.doctor ? apt.doctor.name : "Unassigned" %>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-slate-900"><%= apt.appointmentDate ? apt.appointmentDate.toDateString() : "—" %></div>
+                                    <div class="text-xs text-emerald-600 font-semibold mt-0.5"><%= apt.appointmentTime %></div>
+                                </td>
+                                <td class="px-6 py-4 max-w-xs truncate text-slate-500" title="<%= apt.reason %>"><%= apt.reason %></td>
+                                <td class="px-6 py-4">
+                                    <% if (apt.status==='pending' ) { %>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100">Pending Review</span>
+                                    <% } else if (apt.status==='confirmed' ) { %>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">Confirmed</span>
+                                    <% } else if (apt.status==='completed' ) { %>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">Completed</span>
+                                    <% } else if (apt.status==='cancelled' ) { %>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-500 border border-slate-200">Cancelled</span>
+                                    <% } %>
+                                </td>
+                                <td class="px-6 py-4 text-right whitespace-nowrap">
+                                    <% if (apt.status==='pending' ) { %>
+                                        <form action="/hospital/appointments/<%= apt._id %>/status" method="POST" class="inline-block mr-1">
+                                            <input type="hidden" name="status" value="confirmed">
+                                            <button class="text-emerald-600 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Confirm</button>
+                                        </form>
+                                        <form action="/hospital/appointments/<%= apt._id %>/status" method="POST" class="inline-block">
+                                            <input type="hidden" name="status" value="cancelled">
+                                            <button class="text-rose-600 hover:text-rose-900 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Decline</button>
+                                        </form>
+                                    <% } else if (apt.status==='confirmed' ) { %>
+                                        <form action="/hospital/appointments/<%= apt._id %>/status" method="POST" class="inline-block">
+                                            <input type="hidden" name="status" value="completed">
+                                            <button class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Mark Done</button>
+                                        </form>
+                                    <% } else { %>
+                                        <span class="text-slate-300 text-xs">—</span>
+                                    <% } %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                            <% if (appointments.length===0) { %>
+                            <tr>
+                                <td colspan="7" class="px-6 py-12 text-center">
+                                    <div class="mx-auto h-12 w-12 text-slate-300 mb-3">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    </div>
+                                    <p class="text-slate-500 text-sm">No appointments scheduled.</p>
+                                </td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Beds</p>
-                <p class="mt-1 text-lg font-bold text-slate-800"><%= totalBeds %></p>
-            </div>
-            <div class="bg-brand-50 p-3 rounded-lg border border-brand-100">
-                <p class="text-xs font-semibold text-brand-600 uppercase tracking-wider">Available</p>
-                <p class="mt-1 text-lg font-bold text-brand-700"><%= availableBeds %></p>
-            </div>
         </div>
-      </div>
+    </main>
 
-      <div class="flex-shrink-0">
-        <a href="/hospital/patients/new" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-all transform hover:-translate-y-0.5">
-          <svg class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-          Register Patient
-        </a>
-      </div>
-    </div>
-  </div>
+    <script>
+        const opdSection = document.getElementById("opdSection");
+        const ipdSection = document.getElementById("ipdSection");
+        const appointmentsSection = document.getElementById("appointmentsSection");
+        const btnOpd = document.getElementById("btnOpd");
+        const btnIpd = document.getElementById("btnIpd");
+        const btnAppointments = document.getElementById("btnAppointments");
+        const opdFilters = document.getElementById("opdFilters");
+        const ipdFilters = document.getElementById("ipdFilters");
+        const appointmentFilters = document.getElementById("appointmentFilters");
 
-  <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden min-h-[500px]">
-    
-    <div class="border-b border-slate-200 bg-slate-50/50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      
-      <div class="bg-slate-200/60 p-1 rounded-lg inline-flex" id="tabSwitcher">
-        <button class="px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 tab-active focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-brand-500" onclick="switchTab('opd')" id="btnOpd">
-          OPD
-        </button>
-        <button class="px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 tab-inactive focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-brand-500" onclick="switchTab('ipd')" id="btnIpd">
-          IPD
-        </button>
-        <button class="px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 tab-inactive focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-brand-500" onclick="switchTab('appointments')" id="btnAppointments">
-          Appointments
-          <% const pendingCount = appointments.filter(a => a.status === 'pending').length; %>
-          <% if (pendingCount > 0) { %>
-            <span class="ml-1 px-1.5 py-0.5 text-xs bg-red-500 text-white rounded-full"><%= pendingCount %></span>
-          <% } %>
-        </button>
-      </div>
+        function switchTab(tab) {
+            if (tab === 'opd') showOPD();
+            else if (tab === 'ipd') showIPD();
+            else if (tab === 'appointments') showAppointments();
+        }
 
-      <div id="filterContainer" class="flex flex-wrap items-center gap-2">
-        <div id="opdFilters" class="flex flex-wrap items-center gap-2">
-           <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide mr-1">Filter:</span>
-           <button class="inline-flex items-center px-2.5 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded text-slate-700 bg-white hover:bg-slate-50" onclick="filterOPD('today')">Today</button>
-           <button class="inline-flex items-center px-2.5 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded text-slate-700 bg-white hover:bg-slate-50" onclick="filterOPD('yesterday')">Yesterday</button>
-           <input type="date" id="opdDate" onchange="filterOPD('date')" class="form-input text-xs border-slate-300 rounded focus:ring-brand-500 focus:border-brand-500 h-[30px] w-32 text-slate-600">
-           <div class="h-4 w-px bg-slate-300 mx-1"></div>
-           <button class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-brand-700 bg-brand-50 hover:bg-brand-100 transition-colors" onclick="exportCSV('opdTable','opd.csv')">
-             Download CSV
-           </button>
-        </div>
+        function resetAllTabs() {
+            opdSection.style.display = "none";
+            ipdSection.style.display = "none";
+            appointmentsSection.style.display = "none";
+            opdFilters.style.display = "none";
+            ipdFilters.style.display = "none";
+            appointmentFilters.style.display = "none";
 
-        <div id="ipdFilters" class="hidden flex flex-wrap items-center gap-2">
-           <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide mr-1">Filter:</span>
-           <button class="inline-flex items-center px-2.5 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded text-slate-700 bg-white hover:bg-slate-50" onclick="filterIPD('admitted')">Admitted</button>
-           <button class="inline-flex items-center px-2.5 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded text-slate-700 bg-white hover:bg-slate-50" onclick="filterIPD('discharged')">Discharged</button>
-           <button class="inline-flex items-center px-2.5 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded text-slate-700 bg-white hover:bg-slate-50" onclick="filterIPD('all')">All</button>
-           <div class="h-4 w-px bg-slate-300 mx-1"></div>
-           <button class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-brand-700 bg-brand-50 hover:bg-brand-100 transition-colors" onclick="exportCSV('ipdTable','ipd.csv')">
-             Download CSV
-           </button>
-        </div>
+            // Reset buttons
+            [btnOpd, btnIpd, btnAppointments].forEach(btn => {
+                btn.classList.remove("tab-active", "text-slate-900", "bg-white", "shadow-sm");
+                btn.classList.add("tab-inactive");
+            });
+        }
 
-        <div id="appointmentFilters" class="hidden flex flex-wrap items-center gap-2">
-           <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide mr-1">Filter:</span>
-           <button class="inline-flex items-center px-2.5 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded text-slate-700 bg-white hover:bg-slate-50" onclick="filterAppointments('pending')">Pending</button>
-           <button class="inline-flex items-center px-2.5 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded text-slate-700 bg-white hover:bg-slate-50" onclick="filterAppointments('confirmed')">Confirmed</button>
-           <button class="inline-flex items-center px-2.5 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded text-slate-700 bg-white hover:bg-slate-50" onclick="filterAppointments('completed')">Completed</button>
-           <button class="inline-flex items-center px-2.5 py-1.5 border border-slate-300 shadow-sm text-xs font-medium rounded text-slate-700 bg-white hover:bg-slate-50" onclick="filterAppointments('all')">All</button>
-        </div>
-      </div>
-    </div>
+        function showOPD() {
+            resetAllTabs();
+            opdSection.style.display = "block";
+            opdFilters.style.display = "flex";
+            btnOpd.classList.remove("tab-inactive");
+            btnOpd.classList.add("tab-active");
+            filterOPD("today");
+        }
 
-    <div id="opdSection" class="block w-full overflow-x-auto">
-      <table class="w-full text-left text-sm text-slate-600">
-        <thead class="bg-slate-50 border-b border-slate-200">
-          <tr>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">#</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Name</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Doctor</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Age</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Gender</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Disease</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Visit Date</th>
-          </tr>
-        </thead>
-        <tbody id="opdTable" class="divide-y divide-slate-100 bg-white">
-          <% let i = 0; %>
-          <% patients.filter(p => p.patientType === "OPD").forEach(p => { %>
-            <tr class="hover:bg-slate-50 transition-colors group" data-date="<%= p.admissionDate ? p.admissionDate.toISOString().slice(0,10) : '' %>">
-              <td class="px-6 py-4 font-mono text-xs text-slate-400 group-hover:text-brand-600"><%= ++i %></td>
-              <td class="px-6 py-4 font-medium text-slate-900"><%= p.name %></td>
-              <td class="px-6 py-4">
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800">
-                  <%= p.doctor ? p.doctor.name : "—" %>
-                </span>
-              </td>
-              <td class="px-6 py-4"><%= p.age %></td>
-              <td class="px-6 py-4"><%= p.gender %></td>
-              <td class="px-6 py-4 text-slate-500"><%= p.disease %></td>
-              <td class="px-6 py-4 text-slate-500"><%= p.admissionDate ? p.admissionDate.toDateString() : "—" %></td>
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    </div>
+        function showIPD() {
+            resetAllTabs();
+            ipdSection.style.display = "block";
+            ipdFilters.style.display = "flex";
+            btnIpd.classList.remove("tab-inactive");
+            btnIpd.classList.add("tab-active");
+            filterIPD("admitted");
+        }
 
-    <div id="ipdSection" class="hidden w-full overflow-x-auto">
-      <table class="w-full text-left text-sm text-slate-600">
-        <thead class="bg-slate-50 border-b border-slate-200">
-          <tr>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">#</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Name</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Doctor</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Disease</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Admission</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Discharge</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Action</th>
-          </tr>
-        </thead>
-        <tbody id="ipdTable" class="divide-y divide-slate-100 bg-white">
-          <% let j = 0; %>
-          <% patients.filter(p => p.patientType === "IPD").forEach(p => { %>
-            <tr class="hover:bg-slate-50 transition-colors group" data-status="<%= p.dischargeDate ? 'discharged' : 'admitted' %>">
-              <td class="px-6 py-4 font-mono text-xs text-slate-400 group-hover:text-brand-600"><%= ++j %></td>
-              <td class="px-6 py-4 font-medium text-slate-900"><%= p.name %></td>
-              <td class="px-6 py-4"><%= p.doctor ? p.doctor.name : "—" %></td>
-              <td class="px-6 py-4"><%= p.disease %></td>
-              <td class="px-6 py-4 text-slate-500"><%= p.admissionDate ? p.admissionDate.toDateString() : "—" %></td>
-              <td class="px-6 py-4 text-slate-500">
-                <% if(p.dischargeDate) { %>
-                  <span class="text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-1 rounded-full"><%= p.dischargeDate.toDateString() %></span>
-                <% } else { %>
-                  <span class="text-xs text-slate-400">—</span>
-                <% } %>
-              </td>
-              <td class="px-6 py-4 text-right">
-                <% if (!p.dischargeDate) { %>
-                  <form action="/hospital/patients/<%= p._id %>/discharge" method="POST" class="inline-block">
-                    <button class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-rose-700 bg-rose-50 hover:bg-rose-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 transition-colors">
-                      Discharge
-                    </button>
-                  </form>
-                <% } else { %>
-                   <span class="text-xs text-slate-300 select-none">Completed</span>
-                <% } %>
-              </td>
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    </div>
+        function showAppointments() {
+            resetAllTabs();
+            appointmentsSection.style.display = "block";
+            appointmentFilters.style.display = "flex";
+            btnAppointments.classList.remove("tab-inactive");
+            btnAppointments.classList.add("tab-active");
+            filterAppointments("all");
+        }
 
-    <!-- APPOINTMENTS SECTION -->
-    <div id="appointmentsSection" class="hidden w-full overflow-x-auto">
-      <table class="w-full text-left text-sm text-slate-600">
-        <thead class="bg-slate-50 border-b border-slate-200">
-          <tr>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">#</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Patient Name</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Age/Gender</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Phone</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Doctor</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Date & Time</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Reason</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Action</th>
-          </tr>
-        </thead>
-        <tbody id="appointmentsTable" class="divide-y divide-slate-100 bg-white">
-          <% let k = 0; %>
-          <% appointments.forEach(apt => { %>
-            <tr class="hover:bg-slate-50 transition-colors group" data-status="<%= apt.status %>">
-              <td class="px-6 py-4 font-mono text-xs text-slate-400 group-hover:text-brand-600"><%= ++k %></td>
-              <td class="px-6 py-4 font-medium text-slate-900"><%= apt.patientName %></td>
-              <td class="px-6 py-4"><%= apt.patientAge %>y / <%= apt.patientGender %></td>
-              <td class="px-6 py-4"><%= apt.patientPhone %></td>
-              <td class="px-6 py-4">
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800">
-                  <%= apt.doctor ? apt.doctor.name : "—" %>
-                </span>
-              </td>
-              <td class="px-6 py-4 text-slate-500">
-                <%= apt.appointmentDate ? apt.appointmentDate.toDateString() : "—" %><br>
-                <span class="text-xs text-brand-600 font-medium"><%= apt.appointmentTime %></span>
-              </td>
-              <td class="px-6 py-4 text-slate-500 max-w-xs truncate" title="<%= apt.reason %>"><%= apt.reason %></td>
-              <td class="px-6 py-4">
-                <% if (apt.status === 'pending') { %>
-                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">Pending</span>
-                <% } else if (apt.status === 'confirmed') { %>
-                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">Confirmed</span>
-                <% } else if (apt.status === 'completed') { %>
-                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">Completed</span>
-                <% } else if (apt.status === 'cancelled') { %>
-                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">Cancelled</span>
-                <% } %>
-              </td>
-              <td class="px-6 py-4 text-right">
-                <% if (apt.status === 'pending') { %>
-                  <form action="/hospital/appointments/<%= apt._id %>/status" method="POST" class="inline-block mr-1">
-                    <input type="hidden" name="status" value="confirmed">
-                    <button class="inline-flex items-center px-2.5 py-1 border border-transparent text-xs font-medium rounded text-green-700 bg-green-50 hover:bg-green-100 transition-colors">
-                      Confirm
-                    </button>
-                  </form>
-                  <form action="/hospital/appointments/<%= apt._id %>/status" method="POST" class="inline-block">
-                    <input type="hidden" name="status" value="cancelled">
-                    <button class="inline-flex items-center px-2.5 py-1 border border-transparent text-xs font-medium rounded text-red-700 bg-red-50 hover:bg-red-100 transition-colors">
-                      Cancel
-                    </button>
-                  </form>
-                <% } else if (apt.status === 'confirmed') { %>
-                  <form action="/hospital/appointments/<%= apt._id %>/status" method="POST" class="inline-block">
-                    <input type="hidden" name="status" value="completed">
-                    <button class="inline-flex items-center px-2.5 py-1 border border-transparent text-xs font-medium rounded text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">
-                      Mark Complete
-                    </button>
-                  </form>
-                <% } else { %>
-                  <span class="text-xs text-slate-300 select-none">—</span>
-                <% } %>
-              </td>
-            </tr>
-          <% }) %>
-          <% if (appointments.length === 0) { %>
-            <tr>
-              <td colspan="9" class="px-6 py-8 text-center text-slate-500">
-                No appointments yet
-              </td>
-            </tr>
-          <% } %>
-        </tbody>
-      </table>
-    </div>
+        function filterAppointments(type) {
+            document.querySelectorAll("#appointmentsTable tr").forEach(r => {
+                if (!r.dataset.status) return;
+                r.style.display = type === "all" || r.dataset.status === type ? "" : "none";
+            });
+        }
 
-  </div>
-</main>
+        function filterOPD(type) {
+            const rows = document.querySelectorAll("#opdTable tr");
+            const today = new Date().toISOString().slice(0, 10);
+            const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+            const selected = document.getElementById("opdDate").value;
 
-<script>
-  // UI LOGIC FOR TABS & DROPDOWNS
-  const opdSection = document.getElementById("opdSection");
-  const ipdSection = document.getElementById("ipdSection");
-  const appointmentsSection = document.getElementById("appointmentsSection");
-  const btnOpd = document.getElementById("btnOpd");
-  const btnIpd = document.getElementById("btnIpd");
-  const btnAppointments = document.getElementById("btnAppointments");
-  const opdFilters = document.getElementById("opdFilters");
-  const ipdFilters = document.getElementById("ipdFilters");
-  const appointmentFilters = document.getElementById("appointmentFilters");
+            rows.forEach(r => {
+                const d = r.dataset.date;
+                r.style.display =
+                    (type === "today" && d === today) ||
+                    (type === "yesterday" && d === yesterday) ||
+                    (type === "date" && d === selected)
+                    ? "" : "none";
+            });
+        }
 
-  // Modern Switcher Logic
-  function switchTab(tab) {
-    if(tab === 'opd') showOPD();
-    else if(tab === 'ipd') showIPD();
-    else if(tab === 'appointments') showAppointments();
-  }
+        function filterIPD(type) {
+            document.querySelectorAll("#ipdTable tr").forEach(r => {
+                r.style.display =
+                    type === "all" || r.dataset.status === type ? "" : "none";
+            });
+        }
 
-  function resetAllTabs() {
-    // Hide all sections
-    opdSection.style.display = "none";
-    ipdSection.style.display = "none";
-    appointmentsSection.style.display = "none";
-    opdFilters.style.display = "none";
-    ipdFilters.style.display = "none";
-    appointmentFilters.style.display = "none";
-    
-    // Reset all button styles
-    btnOpd.classList.remove("tab-active");
-    btnOpd.classList.add("tab-inactive");
-    btnIpd.classList.remove("tab-active");
-    btnIpd.classList.add("tab-inactive");
-    btnAppointments.classList.remove("tab-active");
-    btnAppointments.classList.add("tab-inactive");
-  }
+        function exportCSV(tableId, filename) {
+            let csv = [];
+            document.querySelectorAll(`#${tableId} tr`).forEach(row => {
+                if (row.style.display === "none") return;
+                let cols = Array.from(row.children).map(td => `"${td.innerText.replace(/(\r\n|\n|\r)/gm, " ").trim()}"`);
+                csv.push(cols.join(","));
+            });
 
-  function showOPD() {
-    resetAllTabs();
-    opdSection.style.display = "block";
-    opdFilters.style.display = "flex";
-    btnOpd.classList.add("tab-active");
-    btnOpd.classList.remove("tab-inactive");
-    filterOPD("today");
-  }
+            const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
 
-  function showIPD() {
-    resetAllTabs();
-    ipdSection.style.display = "block";
-    ipdFilters.style.display = "flex";
-    btnIpd.classList.add("tab-active");
-    btnIpd.classList.remove("tab-inactive");
-    filterIPD("admitted");
-  }
-
-  function showAppointments() {
-    resetAllTabs();
-    appointmentsSection.style.display = "block";
-    appointmentFilters.style.display = "flex";
-    btnAppointments.classList.add("tab-active");
-    btnAppointments.classList.remove("tab-inactive");
-    filterAppointments("all");
-  }
-
-  // Filter Appointments
-  function filterAppointments(type) {
-    document.querySelectorAll("#appointmentsTable tr").forEach(r => {
-      if (!r.dataset.status) return;
-      r.style.display = type === "all" || r.dataset.status === type ? "" : "none";
-    });
-  }
-
-  // --- EXISTING LOGIC (PRESERVED) ---
-  
-  function filterOPD(type) {
-    const rows = document.querySelectorAll("#opdTable tr");
-    const today = new Date().toISOString().slice(0,10);
-    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
-    const selected = document.getElementById("opdDate").value;
-
-    rows.forEach(r => {
-      const d = r.dataset.date;
-      r.style.display =
-        (type === "today" && d === today) ||
-        (type === "yesterday" && d === yesterday) ||
-        (type === "date" && d === selected)
-        ? "" : "none";
-    });
-  }
-
-  function filterIPD(type) {
-    document.querySelectorAll("#ipdTable tr").forEach(r => {
-      r.style.display =
-        type === "all" || r.dataset.status === type ? "" : "none";
-    });
-  }
-
-  // CSV EXPORT
-  function exportCSV(tableId, filename) {
-    let csv = [];
-    document.querySelectorAll(`#${tableId} tr`).forEach(row => {
-      if (row.style.display === "none") return;
-      let cols = Array.from(row.children).map(td => `"${td.innerText.replace(/(\r\n|\n|\r)/gm, " ").trim()}"`);
-      csv.push(cols.join(","));
-    });
-
-    const blob = new Blob([csv.join("\n")], { type: "text/csv" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-  }
-
-  // Init
-  showOPD(); 
-</script>
-
+        // Initialize default view
+        showOPD();
+    </script>
+     <%- include("../partials/footer") %>
 </body>
 </html>

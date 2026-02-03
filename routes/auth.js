@@ -74,6 +74,7 @@ router.post("/register", async (req, res) => {
       // Link back
       user.hospital = hospital._id;
       await user.save();
+      console.log(user);
     }
 
     res.redirect("/login");
