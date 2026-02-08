@@ -1,55 +1,39 @@
 const express = require("express");
 const router = express.Router();
-
-const Hospital = require("../models/Hospital");
-const Patient = require("../models/Patient");
+const adminController = require("../controllers/adminController");
 const { ensureAdmin } = require("../middleware/auth");
 
-// Admin dashboard
-router.get("/dashboard", ensureAdmin, async (req, res) => {
-  const hospitals = await Hospital.find();
-  const patients = await Patient.find().populate("hospital");
+/**
+ * Admin Routes
+ * SMC Command Center - Smart Public Health Management System
+ * All routes protected with ensureAdmin middleware
+ */
 
-  res.render("dashboards/admin", { hospitals, patients });
-});
+// ==========================================
+// MAIN DASHBOARD
+// ==========================================
 
+// Admin dashboard - Executive Summary
+router.get("/dashboard", ensureAdmin, adminController.getDashboard);
 
-// Disease-wise analytics
-router.get("/analytics/disease", ensureAdmin, async (req, res) => {
-  const data = await Patient.aggregate([
-    {
-      $group: {
-        _id: "$disease",
-        totalCases: { $sum: 1 },
-      },
-    },
-  ]);
+// ==========================================
+// ANALYTICS API ENDPOINTS
+// ==========================================
 
-  res.render("admin/diseaseAnalytics", { data });
-});
+// Ward-wise map data for geospatial visualization
+router.get("/api/map-data", ensureAdmin, adminController.getWardMapData);
 
+// Disease time-series data for trend analysis
+router.get("/api/disease-trends", ensureAdmin, adminController.getDiseaseTimeSeriesData);
 
-// Ward-wise analytics
-router.get("/analytics/ward", ensureAdmin, async (req, res) => {
-  const data = await Patient.aggregate([
-    {
-      $lookup: {
-        from: "hospitals",
-        localField: "hospital",
-        foreignField: "_id",
-        as: "hospital",
-      },
-    },
-    { $unwind: "$hospital" },
-    {
-      $group: {
-        _id: "$hospital.ward",
-        totalCases: { $sum: 1 },
-      },
-    },
-  ]);
+// Resource allocation suggestions
+router.get("/api/resource-suggestions", ensureAdmin, adminController.getResourceAllocationSuggestions);
 
-  res.render("admin/wardAnalytics", { data });
-});
+// ==========================================
+// EMERGENCY RESPONSE
+// ==========================================
+
+// Broadcast emergency alert
+router.post("/api/emergency-alert", ensureAdmin, adminController.broadcastEmergencyAlert);
 
 module.exports = router;

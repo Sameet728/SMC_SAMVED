@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const multer = require('multer');
+const path = require('path');
 
 const Patient = require("../models/Patient");
 const Hospital = require("../models/Hospital");
@@ -8,8 +10,112 @@ const Medicine = require("../models/Medicine");
 const Equipment = require("../models/Equipment");
 const Appointment = require("../models/Appointment");
 const User = require("../models/User");
+const Citizen = require("../models/Citizen");
 
 const { ensureCitizen } = require("../middleware/auth");
+const { uploadProfileImage, handleUploadError } = require("../middleware/upload");
+const citizenController = require("../controllers/citizenController");
+
+// Configure multer for profile image uploads
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, 'public/uploads/profiles/');
+  },
+  filename: function(req, file, cb) {
+    const userId = req.user ? req.user._id : 'default';
+    const extension = path.extname(file.originalname);
+    cb(null, `profile-${userId}-${Date.now()}${extension}`);
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: function(req, file, cb) {
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new Error('Only image files are allowed!'), false);
+    }
+    cb(null, true);
+  }
+});
+
+// =====================================================
+// CITIZEN PROFILE ROUTES - Production Ready
+// =====================================================
+
+/**
+ * POST /citizen/profile
+ * Save/Update complete citizen profile with image upload
+ * - Accepts form data + profile image
+ * - Calculates age from DOB
+ * - Saves to MongoDB (Citizen model)
+ * - Stores only image path, not image itself
+ * - Marks profile as completed
+ * - Updates session with ward
+ */
+router.post(
+  "/profile",
+  ensureCitizen,
+  uploadProfileImage,
+  handleUploadError,
+  citizenController.saveProfile
+);
+
+/**
+ * GET /citizen/profile
+ * Retrieve citizen profile information
+ */
+router.get("/profile", ensureCitizen, citizenController.getProfile);
+
+/**
+ * GET /citizen/profile/edit
+ * Display profile edit form
+ */
+router.get("/profile/edit", ensureCitizen, async (req, res) => {
+  try {
+    const citizen = await Citizen.findOne({ userId: req.user._id }).populate("userId");
+    
+    console.log('📝 Loading profile edit for user:', req.user._id);
+    console.log('👤 Citizen data found:', citizen ? 'YES' : 'NO');
+    
+    if (citizen) {
+      console.log('📋 Profile details:', {
+        name: citizen.fullName,
+        ward: citizen.address?.ward,
+        completed: citizen.profileCompleted
+      });
+    }
+    
+    res.render("citizen/profile", { 
+      user: req.user,
+      citizen: citizen || {},
+      success: req.query.success === 'true'
+    });
+  } catch (error) {
+    console.error("❌ Error loading profile form:", error);
+    res.redirect("/citizen/dashboard");
+  }
+});
+
+/**
+ * POST /citizen/profile/image
+ * Update profile image only
+ */
+router.post(
+  "/profile/image",
+  ensureCitizen,
+  uploadProfileImage,
+  handleUploadError,
+  citizenController.updateProfileImage
+);
+
+/**
+ * DELETE /citizen/profile
+ * Soft delete profile (mark as incomplete)
+ */
+router.delete("/profile", ensureCitizen, citizenController.deleteProfile);
 
 // =====================================================
 // CITIZEN DASHBOARD - Smart Public Health Portal
@@ -17,6 +123,18 @@ const { ensureCitizen } = require("../middleware/auth");
 
 router.get("/dashboard", ensureCitizen, async (req, res) => {
   try {
+    // Load citizen profile
+    let citizen = await Citizen.findOne({ userId: req.user._id }).populate("userId");
+    
+    // If no profile exists, create a basic one
+    if (!citizen) {
+      citizen = {
+        fullName: req.user.name || "Citizen",
+        profileImage: "/default-avatar.png",
+        profileCompleted: false
+      };
+    }
+    
     // Fetch all hospitals with their data
     const hospitals = await Hospital.find();
     const patients = await Patient.find().populate("hospital").populate("doctor");
@@ -163,6 +281,7 @@ router.get("/dashboard", ensureCitizen, async (req, res) => {
     // ================= RENDER DASHBOARD =================
     res.render("dashboards/citizen", {
       user: req.user,
+      citizen, // Citizen profile data for display
       
       // KPIs
       kpis: {
@@ -368,6 +487,91 @@ router.post("/appointment/:id/cancel", ensureCitizen, async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: "Error cancelling appointment" });
+  }
+});
+
+// ================= PROFILE ROUTES =================
+
+// Upload profile image
+router.post('/upload-profile-image', ensureCitizen, upload.single('profileImage'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    // Update user profile image path in database
+    const imagePath = `/uploads/profiles/${req.file.filename}`;
+    await User.findByIdAndUpdate(req.user._id, { profileImage: imagePath });
+
+    res.json({ 
+      success: true, 
+      imagePath: imagePath,
+      message: 'Profile image updated successfully!' 
+    });
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({ error: 'Failed to upload profile image' });
+  }
+});
+
+// Update profile information
+router.post('/update-profile', ensureCitizen, async (req, res) => {
+  try {
+    const updates = req.body;
+    
+    // Remove empty fields
+    Object.keys(updates).forEach(key => {
+      if (updates[key] === '' || updates[key] === null || updates[key] === undefined) {
+        delete updates[key];
+      }
+    });
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id, 
+      updates, 
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ 
+      success: true, 
+      user: updatedUser,
+      message: 'Profile updated successfully!' 
+    });
+  } catch (error) {
+    console.error('Update error:', error);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+// Get all doctors
+router.get('/doctors', ensureCitizen, async (req, res) => {
+  try {
+    const doctors = await Doctor.find({})
+      .populate('hospital')
+      .select('name specialization hospital availability contactNumber');
+
+    res.json({ success: true, doctors });
+  } catch (error) {
+    console.error('Doctors error:', error);
+    res.status(500).json({ error: 'Failed to fetch doctors' });
+  }
+});
+
+// Get doctors for specific hospital
+router.get('/doctors/:hospitalId', ensureCitizen, async (req, res) => {
+  try {
+    const doctors = await Doctor.find({ hospital: req.params.hospitalId })
+      .populate('hospital')
+      .select('name specialization hospital availability contactNumber');
+
+    res.json({ success: true, doctors });
+  } catch (error) {
+    console.error('Doctors error:', error);
+    res.status(500).json({ error: 'Failed to fetch doctors' });
   }
 });
 

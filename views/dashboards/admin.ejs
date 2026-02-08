@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMC Command Center | Admin Dashboard</title>
+  <link rel="icon" type="image/png" href="/Solapur Municipal Corporation_files/favicon_smc.png">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Leaflet for Maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <!-- Leaflet Heat Plugin -->
+  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            smc: {
+              50: '#e6f2f5',
+              100: '#cce5eb',
+              200: '#99cbd7',
+              300: '#66b1c3',
+              400: '#3397af',
+              500: '#1a6985',
+              600: '#155a73',
+              700: '#104b61',
+              800: '#0c3c4f',
+              900: '#072d3d',
+              primary: '#1a5276',
+              dark: '#0d3d56',
+              light: '#2980b9'
+            },
+            status: {
+              success: '#27ae60',
+              warning: '#f39c12',
+              danger: '#e74c3c',
+              info: '#3498db',
+              critical: '#c0392b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #1a5276; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #0d3d56; }
+    
+    .sidebar-link { transition: all 0.2s ease; }
+    .sidebar-link:hover { background-color: rgba(26, 82, 118, 0.1); }
+    .sidebar-link.active { background-color: #1a5276; color: white; }
+    
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+    
+    .pulse-dot { animation: pulse 2s infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    #wardMap { height: 400px; border-radius: 12px; }
+    
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .gradient-smc { background: linear-gradient(135deg, #1a5276 0%, #0d3d56 100%); }
+    .gradient-success { background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%); }
+    .gradient-warning { background: linear-gradient(135deg, #f39c12 0%, #d68910 100%); }
+    .gradient-danger { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+    .gradient-info { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
+    
+    .alert-card {
+      transition: all 0.3s ease;
+    }
+    
+    .alert-card:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 font-sans">
+
+<!-- Main Container -->
+<div class="flex h-screen overflow-hidden">
+
+  <!-- Sidebar -->
+  <aside class="w-64 gradient-smc text-white flex-shrink-0 overflow-y-auto">
+    <div class="p-6">
+      <div class="flex items-center gap-3 mb-8">
+        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+          <svg class="w-6 h-6 text-smc-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold">SMC Command</h1>
+          <p class="text-xs text-blue-200">Health Intelligence</p>
+        </div>
+      </div>
+
+      <nav class="space-y-2">
+        <a href="#executive" onclick="showSection('executive')" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+          <span>Executive Summary</span>
+        </a>
+
+        <a href="#surveillance" onclick="showSection('surveillance')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+          <span>Disease Surveillance</span>
+        </a>
+
+        <a href="#infrastructure" onclick="showSection('infrastructure')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+          <span>Infrastructure</span>
+        </a>
+
+        <a href="#citizens" onclick="showSection('citizens')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+          <span>Citizen Services</span>
+        </a>
+
+        <a href="#emergency" onclick="showSection('emergency')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+          <span>Emergency Response</span>
+        </a>
+
+        <a href="#map" onclick="showSection('map')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+          <span>Ward Map</span>
+        </a>
+      </nav>
+
+      <div class="mt-8 pt-6 border-t border-white/20">
+        <div class="text-xs text-blue-200 mb-2">Logged in as</div>
+        <div class="text-sm font-semibold"><%= user ? user.username : 'Admin' %></div>
+        <a href="/logout" class="mt-4 block w-full px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-center text-sm transition-colors">
+          Logout
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 bg-slate-50 p-4 sm:p-6">
+    
+    <!-- Header Bar -->
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+      <div class="px-6 py-4 flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-800">SMC Command Center</h1>
+          <p class="text-sm text-gray-600">Smart Public Health Management System - Solapur Municipal Corporation</p>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="text-right">
+            <div class="text-xs text-gray-500">Last Updated</div>
+            <div class="text-sm font-semibold text-gray-700" id="lastUpdated">Just now</div>
+          </div>
+          <button onclick="refreshDashboard()" class="px-4 py-2 bg-smc-primary text-white rounded-lg hover:bg-smc-dark transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Sections -->
+    <div class="p-6">
+
+      <!-- SECTION 1: EXECUTIVE SUMMARY -->
+      <section id="executive-section" class="section-content">
+        <div class="mb-6">
+          <h2 class="text-xl font-bold text-gray-800 mb-1">Executive Summary</h2>
+          <p class="text-sm text-gray-600">Real-time overview of city health metrics</p>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <!-- Active Outbreaks -->
+          <div class="bg-white rounded-xl shadow-sm p-6 card-hover border-l-4 border-status-danger">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 gradient-danger rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+              </div>
+              <% if (executiveSummary.activeOutbreaks > 0) { %>
+                <div class="pulse-dot w-3 h-3 bg-red-500 rounded-full"></div>
+              <% } %>
+            </div>
+            <div class="text-3xl font-bold text-gray-800 mb-1"><%= executiveSummary.activeOutbreaks %></div>
+            <div class="text-sm text-gray-600">Active Outbreaks</div>
+          </div>
+
+          <!-- Bed Occupancy -->
+          <div class="bg-white rounded-xl shadow-sm p-6 card-hover border-l-4 border-status-warning">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 gradient-warning rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+              </div>
+            </div>
+            <div class="text-3xl font-bold text-gray-800 mb-1"><%= executiveSummary.occupancyRate %>%</div>
+            <div class="text-sm text-gray-600">Bed Occupancy Rate</div>
+            <div class="mt-2 text-xs text-gray-500"><%= executiveSummary.occupiedBeds %> / <%= executiveSummary.totalBeds %> beds occupied</div>
+          </div>
+
+          <!-- Medicine Alerts -->
+          <div class="bg-white rounded-xl shadow-sm p-6 card-hover border-l-4 border-status-info">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 gradient-info rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+              </div>
+            </div>
+            <div class="text-3xl font-bold text-gray-800 mb-1"><%= executiveSummary.criticalMedicines %></div>
+            <div class="text-sm text-gray-600">Critical Medicine Alerts</div>
+          </div>
+
+          <!-- Emergency Status -->
+          <div class="bg-white rounded-xl shadow-sm p-6 card-hover border-l-4 border-status-<%= executiveSummary.emergencyStatus === 'Critical' ? 'danger' : executiveSummary.emergencyStatus === 'Alert' ? 'warning' : 'success' %>">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 gradient-<%= executiveSummary.emergencyStatus === 'Critical' ? 'danger' : executiveSummary.emergencyStatus === 'Alert' ? 'warning' : 'success' %> rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+              </div>
+            </div>
+            <div class="text-2xl font-bold text-gray-800 mb-1"><%= executiveSummary.emergencyStatus %></div>
+            <div class="text-sm text-gray-600">Emergency Response Status</div>
+          </div>
+        </div>
+
+        <!-- Quick Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm text-gray-600 mb-1">Total Citizens</div>
+                <div class="text-2xl font-bold text-gray-800"><%= executiveSummary.totalCitizens.toLocaleString() %></div>
+              </div>
+              <svg class="w-10 h-10 text-smc-primary opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm text-gray-600 mb-1">Today's Appointments</div>
+                <div class="text-2xl font-bold text-gray-800"><%= executiveSummary.todayAppointments %></div>
+              </div>
+              <svg class="w-10 h-10 text-green-500 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm text-gray-600 mb-1">Available Hospitals</div>
+                <div class="text-2xl font-bold text-gray-800"><%= infrastructureStatus.hospitalCount %></div>
+              </div>
+              <svg class="w-10 h-10 text-blue-500 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: DISEASE SURVEILLANCE -->
+      <section id="surveillance-section" class="section-content hidden">
+        <div class="mb-6 flex justify-between items-center">
+          <div>
+            <h2 class="text-xl font-bold text-gray-800 mb-1">Disease Surveillance Analytics</h2>
+            <p class="text-sm text-gray-600">Real-time epidemiological insights for Solapur Municipal Corporation</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2 px-3 py-2 bg-green-50 rounded-lg">
+              <span class="pulse-dot w-2 h-2 bg-green-500 rounded-full"></span>
+              <span class="text-xs font-medium text-green-700">Live</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Global Filter Bar -->
+        <form id="surveillanceFilterForm" class="bg-white rounded-xl shadow-sm p-4 mb-6">
+          <div class="grid grid-cols-7 gap-3 mb-3">
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Disease</label>
+              <select name="disease" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-smc-primary focus:border-transparent">
+                <option value="">All Diseases</option>
+                <% if (filterOptions && filterOptions.diseases) { %>
+                  <% filterOptions.diseases.forEach(disease => { %>
+                    <option value="<%= disease %>" <%= filters.disease === disease ? 'selected' : '' %>><%= disease %></option>
+                  <% }) %>
+                <% } %>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Zone</label>
+              <select name="zone" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-smc-primary focus:border-transparent">
+                <option value="">All Zones</option>
+                <% if (filterOptions && filterOptions.zones) { %>
+                  <% filterOptions.zones.forEach(zone => { %>
+                    <option value="<%= zone %>" <%= filters.zone === zone ? 'selected' : '' %>><%= zone %></option>
+                  <% }) %>
+                <% } %>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Ward</label>
+              <select name="ward" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-smc-primary focus:border-transparent">
+                <option value="">All Wards</option>
+                <% if (filterOptions && filterOptions.wards) { %>
+                  <% filterOptions.wards.forEach(ward => { %>
+                    <option value="<%= ward %>" <%= filters.ward === ward ? 'selected' : '' %>><%= ward %></option>
+                  <% }) %>
+                <% } %>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Age Group</label>
+              <select name="ageGroup" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-smc-primary focus:border-transparent">
+                <option value="">All Ages</option>
+                <% if (filterOptions && filterOptions.ageGroups) { %>
+                  <% filterOptions.ageGroups.forEach(age => { %>
+                    <option value="<%= age %>" <%= filters.ageGroup === age ? 'selected' : '' %>><%= age %></option>
+                  <% }) %>
+                <% } %>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Gender</label>
+              <select name="gender" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-smc-primary focus:border-transparent">
+                <option value="">All</option>
+                <% if (filterOptions && filterOptions.genders) { %>
+                  <% filterOptions.genders.forEach(gender => { %>
+                    <option value="<%= gender %>" <%= filters.gender === gender ? 'selected' : '' %>><%= gender %></option>
+                  <% }) %>
+                <% } %>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Start Date</label>
+              <input type="date" name="startDate" value="<%= filters.startDate || '' %>" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-smc-primary focus:border-transparent">
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">End Date</label>
+              <input type="date" name="endDate" value="<%= filters.endDate || '' %>" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-smc-primary focus:border-transparent">
+            </div>
+          </div>
+
+          <div class="flex justify-end space-x-2">
+            <button type="submit" class="px-4 py-2 bg-smc-primary text-white rounded-lg text-sm font-medium hover:bg-smc-dark transition">
+              Apply Filters
+            </button>
+            <button type="button" onclick="resetSurveillanceFilters()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition">
+              Reset
+            </button>
+          </div>
+        </form>
+
+        <!-- Predictive Alert Panel -->
+        <% if (predictiveAlerts && predictiveAlerts.length > 0) { %>
+          <div class="bg-white rounded-xl shadow-sm border border-red-200 p-6 mb-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-bold text-gray-800 flex items-center space-x-2">
+                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <span>Predictive Outbreak Alerts</span>
+              </h3>
+              <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">
+                <%= predictiveAlerts.length %> Active Alerts
+              </span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+              <% predictiveAlerts.forEach(alert => { %>
+                <div class="alert-card p-4 bg-<%= alert.severity === 'Critical' ? 'red' : 'orange' %>-50 rounded-lg border-l-4 <%= alert.severity === 'Critical' ? 'border-red-500' : 'border-orange-500' %>">
+                  <div class="flex items-start justify-between mb-2">
+                    <span class="px-2 py-1 bg-<%= alert.severity === 'Critical' ? 'red' : 'orange' %>-500 text-white rounded text-xs font-bold">
+                      <%= alert.severity.toUpperCase() %>
+                    </span>
+                    <span class="text-xs text-gray-600"><%= alert.ward %></span>
+                  </div>
+                  <p class="text-sm font-semibold text-gray-800 mb-1"><%= alert.message %></p>
+                  <div class="flex items-center justify-between text-xs text-gray-600">
+                    <span><%= alert.disease %></span>
+                    <span class="font-bold"><%= alert.caseCount %> cases</span>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+        <% } %>
+
+        <!-- Charts Grid Row 1 -->
+        <div class="grid grid-cols-2 gap-6 mb-6">
+          
+          <!-- Disease Trend Line Chart -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Disease Trend Analysis</h3>
+            <canvas id="diseaseTrendChart" height="300"></canvas>
+          </div>
+
+          <!-- Ward-Wise Disease Bar Chart -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Ward-Wise Disease Distribution</h3>
+            <canvas id="wardDiseaseChart" height="300"></canvas>
+          </div>
+
+        </div>
+
+        <!-- Charts Grid Row 2 -->
+        <div class="grid grid-cols-3 gap-6">
+          
+          <!-- Demographic Breakdown Chart -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Age Group Distribution</h3>
+            <canvas id="demographicChart" height="250"></canvas>
+          </div>
+
+          <!-- Risk Level Donut Chart -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Ward Risk Classification</h3>
+            <canvas id="riskLevelChart" height="250"></canvas>
+          </div>
+
+          <!-- Appointment Spike Chart -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Daily OPD Spikes</h3>
+            <canvas id="appointmentSpikeChart" height="250"></canvas>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- SECTION 3: INFRASTRUCTURE -->
+      <section id="infrastructure-section" class="section-content hidden">
+        <div class="mb-6">
+          <h2 class="text-xl font-bold text-gray-800 mb-1">Public Health Infrastructure Monitor</h2>
+          <p class="text-sm text-gray-600">Hospital resources, equipment status, and inventory management</p>
+        </div>
+
+        <!-- Hospital Bed Availability -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+          <h3 class="font-semibold text-gray-800 mb-4">Hospital Bed Availability</h3>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hospital</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ward</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">General</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ICU</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Isolation</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Occupancy</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <% if (bedOccupancy.length === 0) { %>
+                  <tr>
+                    <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">No hospital data available</td>
+                  </tr>
+                <% } else { %>
+                  <% bedOccupancy.forEach(hospital => { %>
+                    <tr class="hover:bg-gray-50">
+                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><%= hospital.hospitalName || 'N/A' %></td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"><%= hospital.ward || 'N/A' %></td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"><%= hospital.generalAvailable %>/<%= hospital.generalTotal %></td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"><%= hospital.icuAvailable %>/<%= hospital.icuTotal %></td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"><%= hospital.isolationAvailable %>/<%= hospital.isolationTotal %></td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center gap-2">
+                          <div class="flex-1 bg-gray-200 rounded-full h-2 w-24">
+                            <div class="h-2 rounded-full <%= hospital.occupancyRate > 90 ? 'bg-red-500' : hospital.occupancyRate > 75 ? 'bg-yellow-500' : 'bg-green-500' %>" style="width: <%= Math.min(hospital.occupancyRate, 100) %>%"></div>
+                          </div>
+                          <span class="text-sm font-medium text-gray-700"><%= hospital.occupancyRate.toFixed(0) %>%</span>
+                        </div>
+                      </td>
+                    </tr>
+                  <% }); %>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Equipment Status -->
+          <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-4">Equipment Status</h3>
+            <canvas id="equipmentStatusChart"></canvas>
+          </div>
+
+          <!-- Medicine Inventory -->
+          <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-4">Medicine Inventory Status</h3>
+            <canvas id="medicineStockChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Critical Medicine Alerts -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mt-6">
+          <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            Critical Medicine Alerts
+          </h3>
+          <% if (medicineAlerts.length === 0) { %>
+            <div class="text-center py-8 text-gray-500">
+              <p>No critical medicine alerts</p>
+            </div>
+          <% } else { %>
+            <div class="space-y-2">
+              <% medicineAlerts.forEach(medicine => { %>
+                <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                  <div class="flex-1">
+                    <div class="font-medium text-gray-800"><%= medicine.name %></div>
+                    <div class="text-sm text-gray-600"><%= medicine.hospitalName || 'N/A' %> - Ward: <%= medicine.ward || 'N/A' %></div>
+                  </div>
+                  <div class="text-right mr-4">
+                    <div class="text-sm font-semibold text-gray-800"><%= medicine.quantity %> <%= medicine.unit || 'units' %></div>
+                  </div>
+                  <span class="status-badge <%= medicine.status === 'out_of_stock' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800' %>">
+                    <%= medicine.status.replace('_', ' ') %>
+                  </span>
+                </div>
+              <% }); %>
+            </div>
+          <% } %>
+        </div>
+      </section>
+
+      <!-- SECTION 4: CITIZEN SERVICES -->
+      <section id="citizens-section" class="section-content hidden">
+        <div class="mb-6">
+          <h2 class="text-xl font-bold text-gray-800 mb-1">Citizen Service & Engagement Metrics</h2>
+          <p class="text-sm text-gray-600">Appointment tracking and citizen engagement analytics</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+              </div>
+            </div>
+            <div class="text-2xl font-bold text-gray-800 mb-1"><%= citizenMetrics.totalAppointments %></div>
+            <div class="text-sm text-gray-600">Total Appointments</div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              </div>
+            </div>
+            <div class="text-2xl font-bold text-gray-800 mb-1"><%= citizenMetrics.completedAppointments %></div>
+            <div class="text-sm text-gray-600">Completed</div>
+            <div class="mt-2 text-xs text-gray-500"><%= citizenMetrics.completionRate %>% completion rate</div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              </div>
+            </div>
+            <div class="text-2xl font-bold text-gray-800 mb-1"><%= citizenMetrics.pendingAppointments %></div>
+            <div class="text-sm text-gray-600">Pending</div>
+          </div>
+        </div>
+
+        <!-- Profile Completion Stats -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <h3 class="font-semibold text-gray-800 mb-4">Citizen Profile Completion</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <canvas id="profileCompletionChart"></canvas>
+            </div>
+            <div class="flex items-center justify-center">
+              <div class="text-center">
+                <div class="text-5xl font-bold text-smc-primary mb-2"><%= executiveSummary.totalCitizens.toLocaleString() %></div>
+                <div class="text-sm text-gray-600 mb-4">Registered Citizens</div>
+                <div class="grid grid-cols-2 gap-4 mt-6">
+                  <% citizenMetrics.profileCompletion.forEach(item => { %>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                      <div class="text-2xl font-bold text-gray-800"><%= item.count %></div>
+                      <div class="text-xs text-gray-600"><%= item._id ? 'Complete' : 'Incomplete' %></div>
+                    </div>
+                  <% }); %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 5: EMERGENCY RESPONSE -->
+      <section id="emergency-section" class="section-content hidden">
+        <div class="mb-6">
+          <h2 class="text-xl font-bold text-gray-800 mb-1">Emergency Response & Decision Support</h2>
+          <p class="text-sm text-gray-600">Real-time emergency management and resource allocation</p>
+        </div>
+
+        <!-- Emergency Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+          <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500">
+            <div class="text-3xl font-bold text-gray-800 mb-1"><%= emergencyMetrics.healthScore %></div>
+            <div class="text-sm text-gray-600">City Health Score</div>
+            <div class="mt-3 bg-gray-200 rounded-full h-2">
+              <div class="h-2 rounded-full <%= emergencyMetrics.healthScore >= 75 ? 'bg-green-500' : emergencyMetrics.healthScore >= 50 ? 'bg-yellow-500' : 'bg-red-500' %>" style="width: <%= emergencyMetrics.healthScore %>%"></div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-red-500">
+            <div class="text-3xl font-bold text-gray-800 mb-1"><%= emergencyMetrics.criticalOutbreaks %></div>
+            <div class="text-sm text-gray-600">Critical Outbreaks</div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-500">
+            <div class="text-3xl font-bold text-gray-800 mb-1"><%= emergencyMetrics.availableICUBeds %></div>
+            <div class="text-sm text-gray-600">Available ICU Beds</div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-purple-500">
+            <div class="text-3xl font-bold text-gray-800 mb-1"><%= emergencyMetrics.responseTimeAvg %></div>
+            <div class="text-sm text-gray-600">Avg Response Time</div>
+          </div>
+        </div>
+
+        <!-- Broadcast Emergency Alert -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+          <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+            Emergency Alert Broadcast
+          </h3>
+          <form id="emergencyAlertForm" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Alert Title</label>
+                <input type="text" id="alertTitle" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smc-primary focus:border-transparent" placeholder="e.g., Dengue Outbreak Alert" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                <select id="alertPriority" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smc-primary focus:border-transparent">
+                  <option value="critical">Critical</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Message</label>
+              <textarea id="alertMessage" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smc-primary focus:border-transparent" placeholder="Enter emergency alert message..." required></textarea>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Target Audience</label>
+                <select id="alertTarget" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smc-primary focus:border-transparent">
+                  <option value="all">All Citizens</option>
+                  <option value="ward">Specific Ward</option>
+                  <option value="zone">Specific Zone</option>
+                </select>
+              </div>
+              <div id="wardSelectContainer" class="hidden">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Ward</label>
+                <input type="text" id="alertWard" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smc-primary focus:border-transparent" placeholder="Enter ward number">
+              </div>
+            </div>
+            <button type="submit" class="w-full px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold">
+              Broadcast Emergency Alert
+            </button>
+          </form>
+        </div>
+
+        <!-- Ward Health Scorecard -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <h3 class="font-semibold text-gray-800 mb-4">Ward Health Scorecard</h3>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ward</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Active Cases</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Outbreaks</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk Level</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <% if (wardStats.length === 0) { %>
+                  <tr>
+                    <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">No ward data available</td>
+                  </tr>
+                <% } else { %>
+                  <% wardStats.forEach(ward => { %>
+                    <tr class="hover:bg-gray-50">
+                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><%= ward.ward || 'N/A' %></td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"><%= ward.activeCases %></td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"><%= ward.outbreaks %></td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="status-badge <%= ward.severity === 'Critical' ? 'bg-red-100 text-red-800' : ward.severity === 'High' ? 'bg-orange-100 text-orange-800' : ward.severity === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800' %>">
+                          <%= ward.severity || 'Low' %>
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <button class="text-smc-primary hover:text-smc-dark font-medium">View Details</button>
+                      </td>
+                    </tr>
+                  <% }); %>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 6: WARD MAP -->
+      <section id="map-section" class="section-content hidden">
+        <div class="mb-6">
+          <h2 class="text-xl font-bold text-gray-800 mb-1">Ward-Wise Health Indicator Map</h2>
+          <p class="text-sm text-gray-600">Geospatial visualization of disease outbreaks and health zones</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <div id="wardMap"></div>
+          <div class="mt-4 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div class="flex items-center gap-2">
+                <div class="w-4 h-4 bg-green-500 rounded-full"></div>
+                <span class="text-sm text-gray-600">Low Risk</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-4 h-4 bg-yellow-500 rounded-full"></div>
+                <span class="text-sm text-gray-600">Medium Risk</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-4 h-4 bg-orange-500 rounded-full"></div>
+                <span class="text-sm text-gray-600">High Risk</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-4 h-4 bg-red-500 rounded-full"></div>
+                <span class="text-sm text-gray-600">Critical</span>
+              </div>
+            </div>
+            <button onclick="refreshMapData()" class="px-4 py-2 bg-smc-primary text-white rounded-lg hover:bg-smc-dark transition-colors text-sm">
+              Refresh Map
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- JavaScript -->
+<script>
+  // Section Navigation
+  function showSection(sectionName) {
+    const sections = document.querySelectorAll('.section-content');
+    sections.forEach(section => section.classList.add('hidden'));
+    
+    document.getElementById(sectionName + '-section').classList.remove('hidden');
+    
+    // Update active sidebar link
+    const links = document.querySelectorAll('.sidebar-link');
+    links.forEach(link => link.classList.remove('active'));
+    event.target.closest('.sidebar-link').classList.add('active');
+  }
+
+  // Dashboard Refresh
+  function refreshDashboard() {
+    document.getElementById('lastUpdated').textContent = 'Refreshing...';
+    setTimeout(() => {
+      location.reload();
+    }, 500);
+  }
+
+  // Initialize Charts
+  document.addEventListener('DOMContentLoaded', function() {
+    initializeCharts();
+    initializeMap();
+    setupEmergencyAlertForm();
+    updateLastUpdatedTime();
+  });
+
+  function initializeCharts() {
+    // Disease Distribution Chart
+    const diseaseCtx = document.getElementById('diseaseDistributionChart');
+    if (diseaseCtx) {
+      const diseaseData = <%- JSON.stringify(diseaseAnalytics.diseaseDistribution) %>;
+      new Chart(diseaseCtx, {
+        type: 'bar',
+        data: {
+          labels: diseaseData.map(d => d._id || 'Unknown'),
+          datasets: [{
+            label: 'Total Cases',
+            data: diseaseData.map(d => d.totalCases),
+            backgroundColor: '#1a5276',
+          }, {
+            label: 'Active Cases',
+            data: diseaseData.map(d => d.currentActive),
+            backgroundColor: '#e74c3c',
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { position: 'top' }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // Age Distribution Chart
+    const ageCtx = document.getElementById('ageDistributionChart');
+    if (ageCtx) {
+      const ageData = <%- JSON.stringify(diseaseAnalytics.ageDistribution) %>;
+      const ageLabels = ['0-12', '13-18', '19-35', '36-50', '51-65', '65+'];
+      new Chart(ageCtx, {
+        type: 'pie',
+        data: {
+          labels: ageLabels,
+          datasets: [{
+            data: ageData.map(d => d.count),
+            backgroundColor: ['#3498db', '#9b59b6', '#1abc9c', '#f39c12', '#e74c3c', '#34495e']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { position: 'right' }
+          }
+        }
+      });
+    }
+
+    // Equipment Status Chart
+    const equipCtx = document.getElementById('equipmentStatusChart');
+    if (equipCtx) {
+      const equipData = <%- JSON.stringify(infrastructureStatus.equipmentStatus) %>;
+      new Chart(equipCtx, {
+        type: 'doughnut',
+        data: {
+          labels: equipData.map(e => e._id.charAt(0).toUpperCase() + e._id.slice(1)),
+          datasets: [{
+            data: equipData.map(e => e.count),
+            backgroundColor: ['#27ae60', '#f39c12', '#e74c3c']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    }
+
+    // Medicine Stock Chart
+    const medCtx = document.getElementById('medicineStockChart');
+    if (medCtx) {
+      const medData = <%- JSON.stringify(infrastructureStatus.medicineStock) %>;
+      new Chart(medCtx, {
+        type: 'doughnut',
+        data: {
+          labels: medData.map(m => m._id.replace('_', ' ').toUpperCase()),
+          datasets: [{
+            data: medData.map(m => m.count),
+            backgroundColor: ['#27ae60', '#f39c12', '#e74c3c']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    }
+
+    // Profile Completion Chart
+    const profileCtx = document.getElementById('profileCompletionChart');
+    if (profileCtx) {
+      const profileData = <%- JSON.stringify(citizenMetrics.profileCompletion) %>;
+      const completed = profileData.find(p => p._id === true)?.count || 0;
+      const incomplete = profileData.find(p => p._id === false)?.count || 0;
+      new Chart(profileCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Completed', 'Incomplete'],
+          datasets: [{
+            data: [completed, incomplete],
+            backgroundColor: ['#27ae60', '#95a5a6']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    }
+  }
+
+  function initializeMap() {
+    // Initialize Leaflet map centered on Solapur
+    const map = L.map('wardMap').setView([17.6599, 75.9064], 12);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Fetch and display ward outbreak data
+    fetch('/admin/api/map-data')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success && data.data.length > 0) {
+          data.data.forEach(ward => {
+            const coords = ward.location?.coordinates || [75.9064, 17.6599];
+            const color = getSeverityColor(ward.severity);
+            
+            L.circleMarker([coords[1], coords[0]], {
+              radius: Math.min(ward.totalCases * 2, 30),
+              fillColor: color,
+              color: color,
+              weight: 2,
+              opacity: 0.8,
+              fillOpacity: 0.5
+            }).addTo(map).bindPopup(`
+              <div class="p-2">
+                <div class="font-bold">${ward.ward}</div>
+                <div class="text-sm">Cases: ${ward.totalCases}</div>
+                <div class="text-sm">Outbreaks: ${ward.outbreaks}</div>
+                <div class="text-sm">Severity: ${ward.severity}</div>
+              </div>
+            `);
+          });
+        }
+      })
+      .catch(error => console.error('Map data error:', error));
+  }
+
+  function getSeverityColor(severity) {
+    switch(severity) {
+      case 'Critical': return '#e74c3c';
+      case 'High': return '#f39c12';
+      case 'Medium': return '#f1c40f';
+      default: return '#27ae60';
+    }
+  }
+
+  function refreshMapData() {
+    location.reload();
+  }
+
+  function setupEmergencyAlertForm() {
+    const form = document.getElementById('emergencyAlertForm');
+    const targetSelect = document.getElementById('alertTarget');
+    const wardContainer = document.getElementById('wardSelectContainer');
+
+    targetSelect.addEventListener('change', function() {
+      if (this.value === 'ward') {
+        wardContainer.classList.remove('hidden');
+      } else {
+        wardContainer.classList.add('hidden');
+      }
+    });
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const data = {
+        title: document.getElementById('alertTitle').value,
+        message: document.getElementById('alertMessage').value,
+        priority: document.getElementById('alertPriority').value,
+        targetAudience: document.getElementById('alertTarget').value,
+        ward: document.getElementById('alertWard').value
+      };
+
+      try {
+        const response = await fetch('/admin/api/emergency-alert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          alert('Emergency alert broadcast successfully!');
+          form.reset();
+        } else {
+          alert('Failed to broadcast alert: ' + result.error);
+        }
+      } catch (error) {
+        alert('Error broadcasting alert: ' + error.message);
+      }
+    });
+  }
+
+  function updateLastUpdatedTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('en-IN', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+    document.getElementById('lastUpdated').textContent = timeString;
+  }
+
+  // Auto-refresh every 5 minutes
+  setInterval(() => {
+    updateLastUpdatedTime();
+  }, 60000);
+
+  // ==========================================
+  // SURVEILLANCE ANALYTICS CHARTS
+  // ==========================================
+  
+  // Store chart instances globally to prevent duplicates
+  let surveillanceCharts = {
+    trendChart: null,
+    wardChart: null,
+    demoChart: null,
+    riskChart: null,
+    spikeChart: null
+  };
+  let surveillanceChartsInitialized = false;
+
+  function initializeSurveillanceCharts() {
+    // Destroy existing charts first to prevent duplication
+    Object.keys(surveillanceCharts).forEach(key => {
+      if (surveillanceCharts[key]) {
+        surveillanceCharts[key].destroy();
+        surveillanceCharts[key] = null;
+      }
+    });
+
+    // Data from server
+    const diseaseTrends = <%- JSON.stringify(diseaseTrends || []) %>;
+    const wardWiseData = <%- JSON.stringify(wardWiseData || []) %>;
+    const demographicBreakdown = <%- JSON.stringify(demographicBreakdown || []) %>;
+    const riskLevels = <%- JSON.stringify(riskLevels || {High: 0, Medium: 0, Safe: 0}) %>;
+    const appointmentSpikes = <%- JSON.stringify(appointmentSpikes || []) %>;
+
+    // Color schemes
+    const diseaseColors = {
+      'Dengue': '#e74c3c',
+      'Malaria': '#9b59b6',
+      'TB': '#34495e',
+      'Viral Fever': '#f39c12',
+      'Diabetes': '#3498db',
+      'Typhoid': '#1abc9c',
+      'Cholera': '#e67e22',
+      'COVID-19': '#c0392b',
+      'Other': '#95a5a6'
+    };
+
+    // 1. Disease Trend Line Chart
+    const diseaseTrendsCtx = document.getElementById('diseaseTrendsChart').getContext('2d');
+    chartInstances.diseaseTrends = new Chart(diseaseTrendsCtx, {
+      type: 'line',
+      data: {
+        labels: [...new Set(diseaseTrends.flatMap(item => item.data.map(d => d.date)))].sort(),
+        datasets: diseaseTrends.map(item => {
+          const dates = item.data.map(d => d.date);
+          const counts = item.data.map(d => d.count);
+          
+          return {
+            label: item._id,
+            data: counts,
+            borderColor: diseaseColors[item._id] || '#95a5a6',
+            backgroundColor: (diseaseColors[item._id] || '#95a5a6') + '20',
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true,
+            pointRadius: 3,
+            pointHoverRadius: 5
+          };
+        })
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    // 2. Ward-Wise Disease Bar Chart
+    const wardCtx = document.getElementById('wardDiseaseChart').getContext('2d');
+    chartInstances.wardDisease = new Chart(wardCtx, {
+      type: 'bar',
+      data: {
+        labels: wardWiseData.map(w => w._id || 'Unknown'),
+        datasets: [{
+          label: 'Total Cases',
+          data: wardWiseData.map(w => w.total),
+          backgroundColor: 'rgba(26, 82, 118, 0.8)',
+          borderColor: '#1a5276',
+          borderWidth: 1,
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { x: { beginAtZero: true } }
+      }
+    });
+
+    // 3. Demographic Breakdown Chart
+    const demoCtx = document.getElementById('demographicChart').getContext('2d');
+    chartInstances.demoChart = new Chart(demoCtx, {
+      type: 'bar',
+      data: {
+        labels: ['0-12', '13-25', '26-45', '46-60', '60+'],
+        datasets: topDiseases.map(disease => {
+          const data = ageGroups.map(age => {
+            const ageData = demographicBreakdown.find(d => d._id === age);
+            if (ageData) {
+              const diseaseData = ageData.diseases.find(d => d.disease === disease);
+              return diseaseData ? diseaseData.count : 0;
+            }
+            return 0;
+          });
+          
+          return {
+            label: disease,
+            data: data,
+            backgroundColor: diseaseColors[disease],
+            borderRadius: 4
+          };
+        })
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    // 4. Risk Level Donut Chart
+    const riskCtx = document.getElementById('riskLevelChart').getContext('2d');
+    chartInstances.riskChart = new Chart(riskCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['High Risk', 'Medium Risk', 'Safe'],
+        datasets: [{
+          data: [riskLevels.High || 0, riskLevels.Medium || 0, riskLevels.Safe || 0],
+          backgroundColor: ['#e74c3c', '#f39c12', '#27ae60'],
+          borderWidth: 0,
+          hoverOffset: 10
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '70%',
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } }
+        }
+      }
+    });
+
+    // 5. Appointment Spike Chart
+    const spikeCtx = document.getElementById('appointmentSpikeChart').getContext('2d');
+    chartInstances.symptomFrequency = new Chart(spikeCtx, {
+      type: 'bar',
+      data: {
+        labels: spikeDates,
+        datasets: [
+          {
+            label: 'Total Appointments',
+            data: spikeCounts,
+            backgroundColor: 'rgba(52, 152, 219, 0.7)',
+            borderRadius: 4
+          },
+          {
+            label: 'Critical Cases',
+            data: criticalCounts,
+            backgroundColor: 'rgba(231, 76, 60, 0.8)',
+            borderRadius: 4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  }
+
+  // Surveillance Filter Functions
+  function resetSurveillanceFilters() {
+    document.getElementById('surveillanceFilterForm').reset();
+    window.location.href = '/admin/dashboard';
+  }
+
+  document.getElementById('surveillanceFilterForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const params = new URLSearchParams();
+    
+    for (const [key, value] of formData.entries()) {
+      if (value) params.append(key, value);
+    }
+    
+    window.location.href = '/admin/dashboard?' + params.toString();
+  });
+
+  // Initialize surveillance charts after section switch
+  const originalShowSection = showSection;
+  showSection = function(sectionName) {
+    originalShowSection(sectionName);
+    if (sectionName === 'surveillance' && !surveillanceChartsInitialized) {
+      setTimeout(() => {
+        initializeSurveillanceCharts();
+        surveillanceChartsInitialized = true;
+      }, 100);
+    }
+  };
+</script>
+
+</body>
+</html>

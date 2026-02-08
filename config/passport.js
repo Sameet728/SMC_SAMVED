@@ -7,13 +7,20 @@ module.exports = function (passport) {
   passport.use(
     new LocalStrategy(
       { usernameField: "email" },
-      async (email, password, done) => {
+      async (emailOrUsername, password, done) => {
         try {
-          const user = await User.findOne({ email });
-          if (!user) return done(null, false);
+          // Find user by email OR username
+          const user = await User.findOne({
+            $or: [
+              { email: emailOrUsername },
+              { username: emailOrUsername }
+            ]
+          });
+          
+          if (!user) return done(null, false, { message: "Invalid credentials" });
 
           const match = await bcrypt.compare(password, user.password);
-          if (!match) return done(null, false);
+          if (!match) return done(null, false, { message: "Invalid credentials" });
 
           return done(null, user);
         } catch (err) {

@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Your Profile | Smart Health Portal</title>
+  <link rel="icon" type="image/png" href="/Solapur Municipal Corporation_files/favicon_smc.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    .gradient-smc { background: linear-gradient(135deg, #1a5276 0%, #0d3d56 100%); }
+  </style>
+</head>
+<body class="bg-gray-50">
+
+  <!-- Header -->
+  <header class="gradient-smc text-white py-4 shadow-lg">
+    <div class="container mx-auto px-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img src="/Solapur Municipal Corporation_files/favicon_smc.png" alt="SMC" class="h-10">
+        <div>
+          <h1 class="text-xl font-bold">Smart Health Portal</h1>
+          <p class="text-sm text-white/80">Solapur Municipal Corporation</p>
+        </div>
+      </div>
+      <a href="/citizen/dashboard" class="text-white hover:text-yellow-300 text-sm">
+        ← Back to Dashboard
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 py-8 max-w-4xl">
+    
+<!-- Success Banner -->
+  <% if (typeof success !== 'undefined' && success) { %>
+  <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6 rounded-r-lg">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <div>
+          <p class="font-medium text-green-800">Profile Saved Successfully!</p>
+          <p class="text-sm text-green-700">Your health profile has been updated</p>
+        </div>
+      </div>
+      <a href="/citizen/dashboard" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium">
+        View Dashboard →
+      </a>
+    </div>
+  </div>
+  <% } %>
+  
+  <!-- Profile Completion Banner -->
+    <% if (!citizen || !citizen.profileCompleted) { %>
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-lg">
+      <div class="flex items-center gap-3">
+        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+        <div>
+          <p class="font-medium text-yellow-800">Profile Incomplete</p>
+          <p class="text-sm text-yellow-700">Please complete your profile to access all health services</p>
+        </div>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- Profile Form Card -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+      
+      <!-- Card Header -->
+      <div class="gradient-smc text-white p-6">
+        <h2 class="text-2xl font-bold">Citizen Profile</h2>
+        <p class="text-white/80 mt-1">Complete your health profile to book appointments and access services</p>
+      </div>
+
+      <!-- Form -->
+      <form id="profileForm" action="/citizen/profile" method="POST" enctype="multipart/form-data" class="p-6 space-y-8">
+        
+        <!-- Profile Image Section -->
+        <div class="flex flex-col items-center gap-4 pb-6 border-b">
+          <div class="relative">
+            <img 
+              id="profileImagePreview"
+              src="<%= citizen?.profileImage || '/default-avatar.png' %>" 
+              alt="Profile" 
+              class="w-32 h-32 rounded-full object-cover border-4 border-gray-200 shadow-lg"
+            >
+            <label for="profileImageInput" class="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 transition shadow-lg">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+            </label>
+            <input 
+              type="file" 
+              id="profileImageInput" 
+              name="profileImage" 
+              accept="image/*" 
+              class="hidden"
+              onchange="previewImage(event)"
+            >
+          </div>
+          <div class="text-center">
+            <p class="text-sm text-gray-600">Click camera icon to upload photo</p>
+            <p class="text-xs text-gray-400">Max size: 5MB (JPG, PNG, GIF, WebP)</p>
+          </div>
+        </div>
+
+        <!-- Basic Information -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            Basic Information
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+              <input 
+                type="text" 
+                name="fullName" 
+                required 
+                value="<%= citizen?.fullName || '' %>"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter your full name"
+              >
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+              <input 
+                type="tel" 
+                name="phone" 
+                required 
+                pattern="[0-9]{10}"
+                value="<%= citizen?.phone || '' %>"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="10-digit mobile number"
+              >
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input 
+                type="email" 
+                name="email" 
+                value="<%= citizen?.email || '' %>"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="your.email@example.com (optional)"
+              >
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth *</label>
+              <input 
+                type="date" 
+                name="dob" 
+                required
+                value="<%= citizen?.dob ? new Date(citizen.dob).toISOString().split('T')[0] : '' %>"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Gender *</label>
+              <select 
+                name="gender" 
+                required
+                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+              >
+                <option value="">Select Gender</option>
+                <option value="Male" <%= citizen?.gender === 'Male' ? 'selected' : '' %>>Male</option>
+                <option value="Female" <%= citizen?.gender === 'Female' ? 'selected' : '' %>>Female</option>
+                <option value="Other" <%= citizen?.gender === 'Other' ? 'selected' : '' %>>Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Occupation</label>
+              <input 
+                type="text" 
+                name="occupation" 
+                value="<%= citizen?.occupation || '' %>"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Your occupation (optional)"
+              >
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Blood Group</label>
+              <select 
+                name="bloodGroup"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+              >
+                <option value="">Select (optional)</option>
+                <option value="A+" <%= citizen?.healthMetadata?.bloodGroup === 'A+' ? 'selected' : '' %>>A+</option>
+                <option value="A-" <%= citizen?.healthMetadata?.bloodGroup === 'A-' ? 'selected' : '' %>>A-</option>
+                <option value="B+" <%= citizen?.healthMetadata?.bloodGroup === 'B+' ? 'selected' : '' %>>B+</option>
+                <option value="B-" <%= citizen?.healthMetadata?.bloodGroup === 'B-' ? 'selected' : '' %>>B-</option>
+                <option value="AB+" <%= citizen?.healthMetadata?.bloodGroup === 'AB+' ? 'selected' : '' %>>AB+</option>
+                <option value="AB-" <%= citizen?.healthMetadata?.bloodGroup === 'AB-' ? 'selected' : '' %>>AB-</option>
+                <option value="O+" <%= citizen?.healthMetadata?.bloodGroup === 'O+' ? 'selected' : '' %>>O+</option>
+                <option value="O-" <%= citizen?.healthMetadata?.bloodGroup === 'O-' ? 'selected' : '' %>>O-</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Address Information -->
+        <div class="border-t pt-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            Address Information
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
+              <input 
+                type="text" 
+                name="street" 
+                value="<%= citizen?.address?.street || '' %>"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="House no, Building name, Street (optional)"
+              >
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Ward *</label>
+              <input 
+                type="text" 
+                name="ward" 
+                required
+                value="<%= citizen?.address?.ward || '' %>"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="e.g., Ward 12"
+              >
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
+              <input 
+                type="text" 
+                name="pincode" 
+                pattern="[0-9]{6}"
+                value="<%= citizen?.address?.pincode || '' %>"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="6-digit pincode (optional)"
+              >
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+              <input 
+                type="text" 
+                name="city" 
+                value="<%= citizen?.address?.city || 'Solapur' %>"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"
+                readonly
+              >
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Zone</label>
+              <input 
+                type="text" 
+                name="zone" 
+                value="<%= citizen?.zone || '' %>"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Zone/Area (optional)"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Emergency Contact -->
+        <div class="border-t pt-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            Emergency Contact (Optional)
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Contact Name</label>
+              <input 
+                type="text" 
+                name="emergencyContactName" 
+                value="<%= citizen?.emergencyContact?.name || '' %>"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Full name"
+              >
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Contact Phone</label>
+              <input 
+                type="tel" 
+                name="emergencyContactPhone" 
+                pattern="[0-9]{10}"
+                value="<%= citizen?.emergencyContact?.phone || '' %>"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="10-digit number"
+              >
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Relation</label>
+              <input 
+                type="text" 
+                name="emergencyContactRelation" 
+                value="<%= citizen?.emergencyContact?.relation || '' %>"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="e.g., Spouse, Parent"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Health Information -->
+        <div class="border-t pt-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            Health Information (Optional)
+          </h3>
+          
+          <div class="grid grid-cols-1 gap-4">
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Allergies</label>
+              <input 
+                type="text" 
+                name="allergies" 
+                value="<%= citizen?.healthMetadata?.allergies?.join(', ') || '' %>"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="e.g., Peanuts, Penicillin (comma-separated)"
+              >
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Chronic Conditions</label>
+              <input 
+                type="text" 
+                name="chronicConditions" 
+                value="<%= citizen?.healthMetadata?.chronicConditions?.join(', ') || '' %>"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="e.g., Diabetes, Hypertension (comma-separated)"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Buttons -->
+        <div class="border-t pt-6 flex gap-3">
+          <button 
+            type="submit" 
+            class="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium py-3 px-6 rounded-lg hover:from-blue-700 hover:to-blue-800 transition shadow-lg flex items-center justify-center gap-2"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Save Profile
+          </button>
+          
+          <a 
+            href="/citizen/dashboard" 
+            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition font-medium"
+          >
+            Cancel
+          </a>
+        </div>
+
+        <p class="text-xs text-gray-500 text-center">
+          Fields marked with * are required. Your information is securely stored and used only for health services.
+        </p>
+
+      </form>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white py-6 mt-12">
+    <div class="container mx-auto px-4 text-center">
+      <p class="text-sm">&copy; 2026 Solapur Municipal Corporation. All rights reserved.</p>
+      <p class="text-xs text-gray-400 mt-1">Smart Public Health Management System</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // Preview uploaded image
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        // Check file size (5MB limit)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('Image size must be less than 5MB');
+          event.target.value = '';
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('profileImagePreview').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Form validation and submission
+    document.getElementById('profileForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const submitButton = this.querySelector('button[type="submit"]');
+      const originalText = submitButton.innerHTML;
+      
+      // Show loading state
+      submitButton.disabled = true;
+      submitButton.innerHTML = `
+        <svg class="animate-spin h-5 w-5 mr-2 inline" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Saving...
+      `;
+
+      const formData = new FormData(this);
+      
+      // Debug: Log form data
+      console.log('📤 Submitting profile data...');
+      for (let pair of formData.entries()) {
+        if (pair[0] !== 'profileImage') {
+          console.log(pair[0] + ': ' + pair[1]);
+        } else {
+          console.log(pair[0] + ': [File]');
+        }
+      }
+
+      try {
+        console.log('🌐 Sending request to /citizen/profile');
+        const response = await fetch('/citizen/profile', {
+          method: 'POST',
+          body: formData
+        });
+
+        console.log('📥 Response status:', response.status);
+        const result = await response.json();
+        console.log('📋 Response data:', result);
+
+        if (result.success) {
+          console.log('✅ Profile saved successfully:', result);
+          
+          // Show success message
+          const successDiv = document.createElement('div');
+          successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+          successDiv.innerHTML = `
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span>Profile saved successfully!</span>
+            </div>
+          `;
+          document.body.appendChild(successDiv);
+          
+          // Wait a moment to ensure data is saved, then redirect
+          setTimeout(() => {
+            window.location.href = '/citizen/profile/edit?success=true';
+          }, 1000);
+        } else {
+          console.error('❌ Save failed:', result);
+          alert('❌ Error: ' + (result.error || 'Failed to save profile'));
+          submitButton.disabled = false;
+          submitButton.innerHTML = originalText;
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Network error. Please try again.');
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalText;
+      }
+    });
+
+    // Phone number validation
+    document.querySelector('input[name="phone"]').addEventListener('input', function(e) {
+      this.value = this.value.replace(/\D/g, '').slice(0, 10);
+    });
+
+    // Pincode validation
+    const pincodeInput = document.querySelector('input[name="pincode"]');
+    if (pincodeInput) {
+      pincodeInput.addEventListener('input', function(e) {
+        this.value = this.value.replace(/\D/g, '').slice(0, 6);
+      });
+    }
+
+    // Emergency phone validation
+    const emergencyPhone = document.querySelector('input[name="emergencyContactPhone"]');
+    if (emergencyPhone) {
+      emergencyPhone.addEventListener('input', function(e) {
+        this.value = this.value.replace(/\D/g, '').slice(0, 10);
+      });
+    }
+  </script>
+
+</body>
+</html>

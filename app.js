@@ -3,11 +3,36 @@ const express = require("express");
 const session = require("express-session");
 const passport = require("passport");
 const flash = require("connect-flash");
+const bcrypt = require("bcrypt");
 
 const connectDB = require("./config/db");
+const User = require("./models/User");
 
 const app = express();
 connectDB();
+
+// Initialize default admin user
+async function initializeAdmin() {
+  try {
+    const adminExists = await User.findOne({ username: "Admin1927" });
+    if (!adminExists) {
+      const hashedPassword = await bcrypt.hash("Ashish@1927", 10);
+      await User.create({
+        name: "SMC Administrator",
+        username: "Admin1927",
+        email: "admin@smc.gov.in",
+        password: hashedPassword,
+        role: "admin"
+      });
+      console.log("✅ Default admin user created (Username: Admin1927)");
+    }
+  } catch (error) {
+    console.error("Admin initialization error:", error.message);
+  }
+}
+
+// Call admin initialization after a short delay to ensure DB is connected
+setTimeout(initializeAdmin, 1000);
 
 // View Engine
 app.set("view engine", "ejs");

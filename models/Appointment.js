@@ -57,6 +57,29 @@ const AppointmentSchema = new mongoose.Schema({
     required: true,
   },
 
+  // Disease Surveillance Fields
+  diseaseType: {
+    type: String,
+    enum: ["Dengue", "Malaria", "TB", "Viral Fever", "Diabetes", "Typhoid", "Cholera", "COVID-19", "Other"],
+    default: "Other",
+  },
+
+  severity: {
+    type: String,
+    enum: ["Low", "Medium", "High", "Critical"],
+    default: "Low",
+  },
+
+  ward: {
+    type: String,
+    trim: true,
+  },
+
+  zone: {
+    type: String,
+    trim: true,
+  },
+
   // Status
   status: {
     type: String,
