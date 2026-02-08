@@ -2,13 +2,13 @@
 
 ## 🔐 Default Admin Account
 
-**Username:** `Admin1927`  
+**Email:** `admin@gmail.com`  
 **Password:** `Ashish@1927`
 
 ## 📋 Login Instructions
 
 1. Navigate to: `http://localhost:3000/login`
-2. Enter username: `Admin1927`
+2. Enter email: `admin@gmail.com`
 3. Enter password: `Ashish@1927`
 4. Click "Sign in"
 5. You will be automatically redirected to the Admin Dashboard at `/admin/dashboard`

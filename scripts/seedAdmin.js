@@ -6,14 +6,14 @@ const User = require("../models/User");
 /**
  * Seed Admin User
  * Creates the default admin account for SMC Command Center
- * Username: Admin1927
+ * Email: admin@gmail.com
  * Password: Ashish@1927
  */
 
 const ADMIN_CREDENTIALS = {
   name: "SMC Administrator",
   username: "Admin1927",
-  email: "admin@smc.gov.in",
+  email: "admin@gmail.com",
   password: "Ashish@1927",
   role: "admin"
 };
@@ -31,7 +31,7 @@ async function seedAdmin() {
     if (existingAdmin) {
       console.log("⚠️  Admin user already exists!");
       console.log("Username:", ADMIN_CREDENTIALS.username);
-      console.log("Updating password...");
+      console.log("Updating credentials...");
       
       // Update password
       const hashedPassword = await bcrypt.hash(ADMIN_CREDENTIALS.password, 10);
@@ -40,7 +40,8 @@ async function seedAdmin() {
       existingAdmin.email = ADMIN_CREDENTIALS.email;
       await existingAdmin.save();
       
-      console.log("✅ Admin password updated successfully!");
+      console.log("✅ Admin credentials updated successfully!");
+      console.log("✉️  Email:", ADMIN_CREDENTIALS.email);
     } else {
       // Create new admin user
       const hashedPassword = await bcrypt.hash(ADMIN_CREDENTIALS.password, 10);
@@ -63,7 +64,8 @@ async function seedAdmin() {
     }
 
     console.log("\n🎯 Admin can now login at: http://localhost:3000/login");
-    console.log("🔐 Use username:", ADMIN_CREDENTIALS.username);
+    console.log("🔐 Use email:", ADMIN_CREDENTIALS.email);
+    console.log("🔐 Password:", ADMIN_CREDENTIALS.password);
     
     process.exit(0);
   } catch (error) {

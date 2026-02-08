@@ -20,11 +20,11 @@ async function initializeAdmin() {
       await User.create({
         name: "SMC Administrator",
         username: "Admin1927",
-        email: "admin@smc.gov.in",
+        email: "admin@gmail.com",
         password: hashedPassword,
         role: "admin"
       });
-      console.log("✅ Default admin user created (Username: Admin1927)");
+      console.log("✅ Default admin user created (Email: admin@gmail.com)");
     }
   } catch (error) {
     console.error("Admin initialization error:", error.message);
@@ -76,6 +76,8 @@ app.use(flash());
 // Global variables
 app.use((req, res, next) => {
   res.locals.user = req.user || null;
+  res.locals.error = req.flash("error");
+  res.locals.success = req.flash("success");
   next();
 });
 
