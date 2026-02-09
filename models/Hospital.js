@@ -9,6 +9,8 @@ const HospitalSchema = new mongoose.Schema({
 
   hospitalName: String,
   ward: String,
+  localArea: String,
+  zone: String,
   address: String,
   contactNumber: String,
 

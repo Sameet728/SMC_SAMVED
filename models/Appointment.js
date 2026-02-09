@@ -75,6 +75,11 @@ const AppointmentSchema = new mongoose.Schema({
     trim: true,
   },
 
+  localArea: {
+    type: String,
+    trim: true,
+  },
+
   zone: {
     type: String,
     trim: true,

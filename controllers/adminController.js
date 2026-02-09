@@ -24,7 +24,7 @@ exports.getDashboard = async (req, res) => {
     const filters = {
       disease: req.query.disease || null,
       zone: req.query.zone || null,
-      ward: req.query.ward || null,
+      localArea: req.query.localArea || null,
       startDate: req.query.startDate || null,
       endDate: req.query.endDate || null,
       ageGroup: req.query.ageGroup || null,
@@ -1111,16 +1111,70 @@ async function getPredictiveAlerts(filters) {
  */
 async function getSurveillanceFilterOptions() {
   try {
-    const [diseases, zones, wards] = await Promise.all([
-      Appointment.distinct("diseaseType"),
-      Appointment.distinct("zone"),
-      Appointment.distinct("ward"),
-    ]);
+    const diseases = await Appointment.distinct("diseaseType");
+
+    // Define Solapur zones and their local areas
+    const zonesWithLocalAreas = {
+      "Central / Old City Zone": [
+        "Solapur City (Core)",
+        "Mangalwar Peth",
+        "Budhwar Peth",
+        "Shukrawar Peth",
+        "Kasba Solapur",
+        "Navi Peth",
+        "Siddheshwar Peth",
+        "Murarji Peth",
+        "Goldfinch Peth"
+      ],
+      "Central Residential Zone": [
+        "Railway Lines Area",
+        "Saat Rasta Area",
+        "Lashkar",
+        "Ujani Colony",
+        "Sakhar Peth",
+        "Begum Peth"
+      ],
+      "North Solapur Zone": [
+        "Ashok Chowk",
+        "Akkalkot Road Area",
+        "Bale",
+        "Degaon",
+        "Hipparga",
+        "Boramani (urban influence area)"
+      ],
+      "East Solapur / Industrial Zone": [
+        "MIDC Solapur",
+        "Hotgi Road Area",
+        "Konark Nagar",
+        "Datta Nagar",
+        "Saat Rasta East",
+        "Railway Goods Yard Area"
+      ],
+      "South & South-West Zone": [
+        "Vijapur Road Area",
+        "Jule Solapur",
+        "Jule MIDC",
+        "Walchand Nagar",
+        "Majrewadi",
+        "Kegaon (urbanized part)"
+      ],
+      "West / Peripheral Development Zone": [
+        "Kumbhari (partly merged urban area)",
+        "Shelgi",
+        "Dhotri",
+        "Antrolikar Nagar",
+        "Sainath Nagar"
+      ]
+    };
+
+    // Get all local areas as a flat array
+    const allLocalAreas = Object.values(zonesWithLocalAreas).flat();
 
     return {
       diseases: diseases.filter(Boolean),
-      zones: zones.filter(Boolean),
-      wards: wards.filter(Boolean).sort(),
+      zones: Object.keys(zonesWithLocalAreas),
+      localAreas: allLocalAreas,
+      zonesWithLocalAreas: zonesWithLocalAreas,
       ageGroups: ["0-12", "13-25", "26-45", "46-60", "60+"],
       genders: ["Male", "Female", "Other"],
     };
@@ -1128,8 +1182,9 @@ async function getSurveillanceFilterOptions() {
     console.error("Filter Options Error:", error);
     return {
       diseases: ["Dengue", "Malaria", "TB", "Viral Fever", "Diabetes"],
-      zones: [],
-      wards: [],
+      zones: ["Central / Old City Zone", "Central Residential Zone", "North Solapur Zone", "East Solapur / Industrial Zone", "South & South-West Zone", "West / Peripheral Development Zone"],
+      localAreas: [],
+      zonesWithLocalAreas: {},
       ageGroups: ["0-12", "13-25", "26-45", "46-60", "60+"],
       genders: ["Male", "Female", "Other"],
     };
@@ -1150,8 +1205,8 @@ function buildMatchStage(filters) {
     match.zone = filters.zone;
   }
 
-  if (filters.ward) {
-    match.ward = filters.ward;
+  if (filters.localArea) {
+    match.localArea = filters.localArea;
   }
 
   if (filters.gender) {

@@ -124,34 +124,34 @@
       </div>
 
       <nav class="space-y-2">
-        <a href="#executive" onclick="showSection('executive')" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-lg">
+        <a href="#executive" onclick="showSection('executive'); return false;" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
           <span>Executive Summary</span>
         </a>
 
-        <a href="#surveillance" onclick="showSection('surveillance')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg">
+        <a href="#surveillance" onclick="showSection('surveillance'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
           <span>Disease Surveillance</span>
         </a>
 
-        <a href="#infrastructure" onclick="showSection('infrastructure')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg">
+        <a href="#infrastructure" onclick="showSection('infrastructure'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
           <span>Infrastructure</span>
         </a>
 
-        <a href="#citizens" onclick="showSection('citizens')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg">
+        <a href="#citizens" onclick="showSection('citizens'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
           <span>Citizen Services</span>
         </a>
 
-        <a href="#emergency" onclick="showSection('emergency')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg">
+        <a href="#emergency" onclick="showSection('emergency'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
           <span>Emergency Response</span>
         </a>
 
-        <a href="#map" onclick="showSection('map')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg">
+        <a href="#map" onclick="showSection('map'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-          <span>Ward Map</span>
+          <span>Zone Map</span>
         </a>
       </nav>
 
@@ -326,12 +326,12 @@
             </div>
 
             <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Ward</label>
-              <select name="ward" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-smc-primary focus:border-transparent">
-                <option value="">All Wards</option>
-                <% if (filterOptions && filterOptions.wards) { %>
-                  <% filterOptions.wards.forEach(ward => { %>
-                    <option value="<%= ward %>" <%= filters.ward === ward ? 'selected' : '' %>><%= ward %></option>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Local Area</label>
+              <select name="localArea" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-smc-primary focus:border-transparent">
+                <option value="">All Local Areas</option>
+                <% if (filterOptions && filterOptions.localAreas) { %>
+                  <% filterOptions.localAreas.forEach(localArea => { %>
+                    <option value="<%= localArea %>" <%= filters.localArea === localArea ? 'selected' : '' %>><%= localArea %></option>
                   <% }) %>
                 <% } %>
               </select>
@@ -404,7 +404,7 @@
                     <span class="px-2 py-1 bg-<%= alert.severity === 'Critical' ? 'red' : 'orange' %>-500 text-white rounded text-xs font-bold">
                       <%= alert.severity.toUpperCase() %>
                     </span>
-                    <span class="text-xs text-gray-600"><%= alert.ward %></span>
+                    <span class="text-xs text-gray-600"><%= alert.localArea || alert.zone %></span>
                   </div>
                   <p class="text-sm font-semibold text-gray-800 mb-1"><%= alert.message %></p>
                   <div class="flex items-center justify-between text-xs text-gray-600">
@@ -426,9 +426,9 @@
             <canvas id="diseaseTrendChart" height="300"></canvas>
           </div>
 
-          <!-- Ward-Wise Disease Bar Chart -->
+          <!-- Local Area-Wise Disease Bar Chart -->
           <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">Ward-Wise Disease Distribution</h3>
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Local Area-Wise Disease Distribution</h3>
             <canvas id="wardDiseaseChart" height="300"></canvas>
           </div>
 
@@ -445,7 +445,7 @@
 
           <!-- Risk Level Donut Chart -->
           <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">Ward Risk Classification</h3>
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Local Area Risk Classification</h3>
             <canvas id="riskLevelChart" height="250"></canvas>
           </div>
 
@@ -473,7 +473,7 @@
               <thead class="bg-gray-50">
                 <tr>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hospital</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ward</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Local Area</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">General</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ICU</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Isolation</th>
@@ -489,7 +489,7 @@
                   <% bedOccupancy.forEach(hospital => { %>
                     <tr class="hover:bg-gray-50">
                       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><%= hospital.hospitalName || 'N/A' %></td>
-                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"><%= hospital.ward || 'N/A' %></td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"><%= hospital.localArea || hospital.ward || 'N/A' %></td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"><%= hospital.generalAvailable %>/<%= hospital.generalTotal %></td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"><%= hospital.icuAvailable %>/<%= hospital.icuTotal %></td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"><%= hospital.isolationAvailable %>/<%= hospital.isolationTotal %></td>
@@ -539,7 +539,7 @@
                 <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
                   <div class="flex-1">
                     <div class="font-medium text-gray-800"><%= medicine.name %></div>
-                    <div class="text-sm text-gray-600"><%= medicine.hospitalName || 'N/A' %> - Ward: <%= medicine.ward || 'N/A' %></div>
+                    <div class="text-sm text-gray-600"><%= medicine.hospitalName || 'N/A' %> - Local Area: <%= medicine.localArea || medicine.ward || 'N/A' %></div>
                   </div>
                   <div class="text-right mr-4">
                     <div class="text-sm font-semibold text-gray-800"><%= medicine.quantity %> <%= medicine.unit || 'units' %></div>
@@ -740,10 +740,10 @@
         </div>
       </section>
 
-      <!-- SECTION 6: WARD MAP -->
+      <!-- SECTION 6: ZONE MAP -->
       <section id="map-section" class="section-content hidden">
         <div class="mb-6">
-          <h2 class="text-xl font-bold text-gray-800 mb-1">Ward-Wise Health Indicator Map</h2>
+          <h2 class="text-xl font-bold text-gray-800 mb-1">Zone-Wise Health Indicator Map</h2>
           <p class="text-sm text-gray-600">Geospatial visualization of disease outbreaks and health zones</p>
         </div>
 
@@ -791,7 +791,16 @@
     // Update active sidebar link
     const links = document.querySelectorAll('.sidebar-link');
     links.forEach(link => link.classList.remove('active'));
-    event.target.closest('.sidebar-link').classList.add('active');
+    
+    // Try to find and activate the clicked link
+    const clickedLink = window.event?.target?.closest?.('.sidebar-link');
+    if (clickedLink) {
+      clickedLink.classList.add('active');
+    } else {
+      // Fallback: find link by href
+      const targetLink = document.querySelector(`a[href="#${sectionName}"]`);
+      if (targetLink) targetLink.classList.add('active');
+    }
   }
 
   // Dashboard Refresh
@@ -1229,6 +1238,39 @@
     });
   }
 
+  // Zone to Local Area mapping
+  const zonesWithLocalAreas = <%- JSON.stringify(filterOptions.zonesWithLocalAreas || {}) %>;
+  
+  // Handle zone change to filter local areas
+  document.querySelector('select[name="zone"]')?.addEventListener('change', function(e) {
+    const selectedZone = e.target.value;
+    const localAreaSelect = document.querySelector('select[name="localArea"]');
+    
+    if (!localAreaSelect) return;
+    
+    // Clear current options except the first "All Local Areas"
+    localAreaSelect.innerHTML = '<option value="">All Local Areas</option>';
+    
+    if (selectedZone && zonesWithLocalAreas[selectedZone]) {
+      // Add local areas for selected zone
+      zonesWithLocalAreas[selectedZone].forEach(localArea => {
+        const option = document.createElement('option');
+        option.value = localArea;
+        option.textContent = localArea;
+        localAreaSelect.appendChild(option);
+      });
+    } else {
+      // Show all local areas if no zone selected
+      const allLocalAreas = <%- JSON.stringify(filterOptions.localAreas || []) %>;
+      allLocalAreas.forEach(localArea => {
+        const option = document.createElement('option');
+        option.value = localArea;
+        option.textContent = localArea;
+        localAreaSelect.appendChild(option);
+      });
+    }
+  });
+
   // Surveillance Filter Functions
   function resetSurveillanceFilters() {
     document.getElementById('surveillanceFilterForm').reset();
@@ -1248,16 +1290,18 @@
   });
 
   // Initialize surveillance charts after section switch
-  const originalShowSection = showSection;
-  showSection = function(sectionName) {
-    originalShowSection(sectionName);
-    if (sectionName === 'surveillance' && !surveillanceChartsInitialized) {
-      setTimeout(() => {
-        initializeSurveillanceCharts();
-        surveillanceChartsInitialized = true;
-      }, 100);
-    }
-  };
+  (function() {
+    const originalShowSection = showSection;
+    window.showSection = function(sectionName) {
+      originalShowSection.call(this, sectionName);
+      if (sectionName === 'surveillance' && !surveillanceChartsInitialized) {
+        setTimeout(() => {
+          initializeSurveillanceCharts();
+          surveillanceChartsInitialized = true;
+        }, 100);
+      }
+    };
+  })();
 </script>
 
 </body>
