@@ -1,0 +1,460 @@
+<div class="p-6 md:p-8 lg:p-10">
+
+<div class="mb-6">
+    <h1 class="text-3xl font-bold text-slate-800">Programs Section</h1>
+    <p class="text-slate-600 mt-2">Manage public health programs, vaccination drives, and community initiatives</p>
+</div>
+
+<!-- Live Programs Card -->
+<div class="mb-8">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-6 border-b border-slate-200 bg-gradient-to-r from-rose-50 to-orange-50">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Live Programs</h2>
+                    <p class="text-sm text-slate-600 mt-1">Currently active health programs and campaigns</p>
+                </div>
+                <div class="flex items-center gap-2 px-4 py-2 bg-rose-100 text-rose-700 rounded-full">
+                    <div class="w-2 h-2 bg-rose-500 rounded-full animate-pulse"></div>
+                    <span class="text-sm font-semibold"><%= programs ? programs.length : 0 %> Active</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6">
+            <% if (programs && programs.length > 0) { %>
+            <!-- Program List with Banner Images -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                
+                <% programs.forEach((program, index) => { %>
+                <!-- Program <%= index + 1 %>: <%= program.name %> -->
+                <div class="bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-lg transition-all group">
+                    <!-- Program Banner -->
+                    <div class="relative h-48 bg-gradient-to-br from-<%= program.gradientColors.from %> to-<%= program.gradientColors.to %> flex items-center justify-center">
+                        <div class="text-center px-6">
+                            <div class="text-white mb-2">
+                                <svg class="w-16 h-16 mx-auto mb-3 opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <% if (program.type === 'vaccination') { %>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                    <% } else if (program.type === 'health_camp') { %>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                    <% } else { %>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    <% } %>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-1"><%= program.name %></h3>
+                        </div>
+                        <div class="absolute top-3 right-3 bg-<%= program.status === 'active' ? 'green' : 'gray' %>-500 text-white text-xs font-semibold px-3 py-1 rounded-full capitalize">
+                            <%= program.status %>
+                        </div>
+                    </div>
+                    
+                    <!-- Program Details -->
+                    <div class="p-4">
+                        <div class="mb-3">
+                            <p class="text-xs text-slate-500 mb-2"><%= new Date(program.startDate).toLocaleDateString() %> - <%= new Date(program.endDate).toLocaleDateString() %></p>
+                            <p class="text-sm text-slate-600"><%= program.description.substring(0, 100) %><%= program.description.length > 100 ? '...' : '' %></p>
+                        </div>
+                        
+                        <div class="flex items-center gap-3 mb-3 text-xs text-slate-600">
+                            <span class="flex items-center gap-1">
+                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <%= program.locations %>
+                            </span>
+                        </div>
+                        
+                        <div class="flex items-center gap-2 pt-3 border-t border-slate-200">
+                            <button onclick="deleteProgram('<%= program._id %>')" class="flex-1 px-3 py-2 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <% }); %>
+
+            </div>
+            <% } else { %>
+            <div class="text-center py-12">
+                <svg class="w-16 h-16 mx-auto text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                </svg>
+                <p class="text-slate-600 font-medium">No programs created yet</p>
+                <p class="text-sm text-slate-500 mt-2">Create your first health program using the form below</p>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<!-- Add New Program Section -->
+<div class="mb-8">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-6 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-blue-100 rounded-lg">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Add New Program</h2>
+                    <p class="text-sm text-slate-600 mt-1">Create a new health program or campaign</p>
+                </div>
+            </div>
+        </div>
+
+        <form id="createProgramForm" class="p-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Program Name -->
+                <div class="lg:col-span-2">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Program Name <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        name="name"
+                        placeholder="e.g., COVID-19 Vaccination Drive"
+                        class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                    >
+                </div>
+
+                <!-- Program Banner Image -->
+                <div class="lg:col-span-2">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Program Banner Image <span class="text-red-500">*</span>
+                    </label>
+                    <div class="flex items-center gap-4">
+                        <div class="flex-1">
+                            <div class="relative">
+                                <input 
+                                    type="file" 
+                                    accept="image/*"
+                                    id="programImage"
+                                    class="hidden"
+                                    required
+                                >
+                                <label 
+                                    for="programImage" 
+                                    class="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-slate-300 rounded-lg hover:border-blue-500 transition-colors cursor-pointer group"
+                                >
+                                    <div class="text-center">
+                                        <svg class="w-8 h-8 mx-auto text-slate-400 group-hover:text-blue-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        <p class="text-sm text-slate-600 group-hover:text-blue-600">
+                                            <span class="font-semibold">Click to upload</span> or drag and drop
+                                        </p>
+                                        <p class="text-xs text-slate-500 mt-1">PNG, JPG, GIF up to 5MB</p>
+                                    </div>
+                                </label>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-2">
+                                <svg class="w-4 h-4 inline mr-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                This banner image will be displayed to citizens. Recommended size: 1200x400px
+                            </p>
+                        </div>
+                        <!-- Image Preview -->
+                        <div id="imagePreview" class="hidden">
+                            <div class="relative w-32 h-32 border border-slate-200 rounded-lg overflow-hidden">
+                                <img id="previewImg" src="" alt="Preview" class="w-full h-full object-cover">
+                                <button 
+                                    type="button" 
+                                    onclick="document.getElementById('programImage').value = ''; document.getElementById('imagePreview').classList.add('hidden');"
+                                    class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    // Image preview functionality
+                    document.getElementById('programImage').addEventListener('change', function(e) {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                document.getElementById('previewImg').src = e.target.result;
+                                document.getElementById('imagePreview').classList.remove('hidden');
+                            }
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                </script>
+
+                <!-- Description -->
+                <div class="lg:col-span-2">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Program Description <span class="text-red-500">*</span>
+                    </label>
+                    <textarea 
+                        name="description"
+                        placeholder="Describe the program, its benefits, and eligibility"
+                        rows="3"
+                        class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                    ></textarea>
+                </div>
+
+                <!-- Program Type -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Program Type <span class="text-red-500">*</span>
+                    </label>
+                    <select name="type" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                        <option value="">Select program type</option>
+                        <option value="vaccination">Vaccination Drive</option>
+                        <option value="health_camp">Health Checkup Camp</option>
+                        <option value="maternal_health">Maternal Health</option>
+                        <option value="child_health">Child Health</option>
+                        <option value="awareness">Awareness Program</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <!-- Target Population -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Target Audience
+                    </label>
+                    <input 
+                        type="text" 
+                        name="targetAudience"
+                        placeholder="e.g., All Citizens, Children 0-18, Pregnant Women"
+                        class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                </div>
+
+                <!-- Start Date -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Start Date <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="date" 
+                        name="startDate"
+                        class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                    >
+                </div>
+
+                <!-- End Date -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        End Date <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="date" 
+                        name="endDate"
+                        class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                    >
+                </div>
+
+                <!-- Target Count -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Target Count <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="number" 
+                        placeholder="e.g., 5000"
+                        class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                    >
+                </div>
+
+                <!-- Number of Centers/Locations -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Number of Centers/Locations <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="number" 
+                        placeholder="e.g., 10"
+                        class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                    >
+                </div>
+
+                <!-- Program Description -->
+                <div class="lg:col-span-2">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Program Description <span class="text-red-500">*</span>
+                    </label>
+                    <textarea 
+                        placeholder="Provide a detailed description of the program objectives and activities"
+                        rows="4"
+                        class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        required
+                    ></textarea>
+                </div>
+
+                <!-- Location Details -->
+                <div class="lg:col-span-2">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Location Details
+                    </label>
+                    <textarea 
+                        placeholder="List the specific locations where the program will be conducted"
+                        rows="3"
+                        class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    ></textarea>
+                </div>
+
+                <!-- Program Coordinator -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Program Coordinator
+                    </label>
+                    <input 
+                        type="text" 
+                        name="coordinator"
+                        placeholder="Name of the coordinator"
+                        class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                </div>
+
+                <!-- Contact Number -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Contact Number
+                    </label>
+                    <input 
+                        type="tel" 
+                        name="contactNumber"
+                        placeholder="e.g., +91 9876543210"
+                        class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                </div>
+
+                <!-- Gradient From Color -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Card Color (From)
+                    </label>
+                    <select name="gradientFrom" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="blue-600">Blue</option>
+                        <option value="green-600">Green</option>
+                        <option value="pink-600">Pink</option>
+                        <option value="purple-600">Purple</option>
+                        <option value="red-600">Red</option>
+                        <option value="yellow-600">Yellow</option>
+                        <option value="indigo-600">Indigo</option>
+                    </select>
+                </div>
+
+                <!-- Gradient To Color -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Card Color (To)
+                    </label>
+                    <select name="gradientTo" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="blue-800">Blue Dark</option>
+                        <option value="green-800">Green Dark</option>
+                        <option value="pink-800">Pink Dark</option>
+                        <option value="purple-800">Purple Dark</option>
+                        <option value="red-800">Red Dark</option>
+                        <option value="yellow-800">Yellow Dark</option>
+                        <option value="indigo-800">Indigo Dark</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex items-center justify-end gap-4 mt-8 pt-6 border-t border-slate-200">
+                <button 
+                    type="button"
+                    onclick="document.getElementById('createProgramForm').reset()"
+                    class="px-6 py-2.5 border border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-colors"
+                >
+                    Cancel
+                </button>
+                <button 
+                    type="submit"
+                    class="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Create Program
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Form submission handler
+document.getElementById('createProgramForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
+    
+    try {
+        const response = await fetch('/admin/programs/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Program created successfully!');
+            window.location.reload();
+        } else {
+            alert('Error: ' + (result.message || 'Failed to create program'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to create program. Please try again.');
+    }
+});
+
+// Delete program function
+async function deleteProgram(programId) {
+    if (!confirm('Are you sure you want to delete this program?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/admin/programs/${programId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Program deleted successfully!');
+            window.location.reload();
+        } else {
+            alert('Error: ' + (result.message || 'Failed to delete program'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to delete program. Please try again.');
+    }
+}
+</script>
+
+</div>

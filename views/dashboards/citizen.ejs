@@ -68,6 +68,58 @@
     }
   </script>
 
+  <script>
+    // Define critical functions early to prevent "not defined" errors
+    function showSection(section) {
+      // Hide all sections
+      document.querySelectorAll('.section-content').forEach(s => s.classList.add('hidden'));
+      
+      // Show selected section
+      const targetSection = document.getElementById('section-' + section);
+      if (targetSection) {
+        targetSection.classList.remove('hidden');
+      }
+      
+      // Update navigation active state
+      const navLink = document.querySelector(`[href="#${section}"]`);
+      if (navLink) {
+        setActiveNav(navLink);
+      }
+      
+      // Initialize map if map section
+      if (section === 'map' && typeof initMap === 'function') {
+        initMap();
+      }
+      
+      // Reinitialize charts if analytics section
+      if (section === 'analytics' && typeof initCharts === 'function') {
+        setTimeout(() => {
+          // Reset flag to allow reinitializing charts
+          if (typeof chartsInitialized !== 'undefined') {
+            chartsInitialized = false;
+          }
+          // Destroy and recreate charts
+          initCharts();
+        }, 150);
+      }
+      
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    // Set active navigation item
+    function setActiveNav(element) {
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+        item.style.borderBottom = '3px solid transparent';
+      });
+      if (element) {
+        element.classList.add('active');
+        element.style.borderBottom = '3px solid #f39c12';
+      }
+    }
+  </script>
+
   <style>
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #f1f5f9; }
@@ -234,6 +286,22 @@
 </head>
 
 <body class="bg-gray-100 text-gray-700">
+
+<!-- Debug: Page Load Indicator -->
+<div id="page-load-indicator" style="position: fixed; top: 0; left: 0; right: 0; background: #4CAF50; color: white; padding: 10px; text-align: center; z-index: 99999; font-weight: bold;">
+  ✓ Page is loading... (Citizen Dashboard)
+</div>
+<script>
+  // Remove indicator after 2 seconds if page loads successfully
+  setTimeout(function() {
+    var indicator = document.getElementById('page-load-indicator');
+    if (indicator) {
+      indicator.style.display = 'none';
+    }
+  }, 2000);
+  console.log("🔵 Citizen Dashboard JavaScript is executing");
+  console.log("🔵 User:", "<%= user ? user.name : 'Not logged in' %>");
+</script>
 
 <!-- ======================= SMC STYLE HEADER ======================= -->
 <!-- Top Info Bar -->
@@ -439,90 +507,47 @@
           </div>
 
           <!-- Carousel Container -->
+          <% if (programs && programs.length > 0) { %>
           <div class="relative px-6 pb-6">
             <div class="overflow-hidden rounded-xl">
               <div class="carousel-container flex transition-transform duration-500 ease-in-out" id="programsCarousel">
                 
-                <!-- Program Card 1 - COVID-19 Vaccination -->
-                <div class="carousel-slide flex-none w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white p-8 rounded-xl">
+                <% programs.forEach((program, index) => { %>
+                <!-- Program Card <%= index + 1 %> - <%= program.name %> -->
+                <div class="carousel-slide flex-none w-full bg-gradient-to-r from-<%= program.gradientColors.from %> to-<%= program.gradientColors.to %> text-white p-8 rounded-xl">
                   <div class="flex items-center justify-between">
                     <div class="flex-1">
                       <div class="flex items-center gap-3 mb-4">
                         <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
                           <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <% if (program.type === 'vaccination') { %>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            <% } else if (program.type === 'health_camp') { %>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                            <% } else if (program.type === 'maternal_health') { %>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            <% } else { %>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            <% } %>
                           </svg>
                         </div>
                         <div>
-                          <h3 class="text-2xl font-bold">COVID-19 Vaccination Drive</h3>
-                          <p class="text-blue-100">Daily 9:00 AM - 6:00 PM</p>
+                          <h3 class="text-2xl font-bold"><%= program.name %></h3>
+                          <p class="text-white/90"><%= new Date(program.startDate).toLocaleDateString() %> - <%= new Date(program.endDate).toLocaleDateString() %></p>
                         </div>
                       </div>
-                      <p class="text-blue-50 mb-4">Free COVID-19 booster shots available at all SMC health centers. Walk-in facility available.</p>
+                      <p class="text-white/90 mb-4"><%= program.description %></p>
                       <div class="flex items-center gap-4 text-sm">
-                        <span class="bg-white/20 px-3 py-1 rounded-full">📍 All Health Centers</span>
+                        <span class="bg-white/20 px-3 py-1 rounded-full">📍 <%= program.locations %></span>
                         <span class="bg-green-500 px-3 py-1 rounded-full">✅ Active</span>
                       </div>
                     </div>
                     <div class="ml-8">
-<img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='80' viewBox='0 0 120 80'%3E%3Crect width='120' height='80' fill='%23ffffff20' rx='8'/%3E%3Ctext x='60' y='40' text-anchor='middle' dominant-baseline='middle' fill='%23ffffff' font-size='12'%3EVaccination%3C/text%3E%3C/svg%3E" alt="Vaccination" class="rounded-lg">
+<img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='80' viewBox='0 0 120 80'%3E%3Crect width='120' height='80' fill='%23ffffff20' rx='8'/%3E%3Ctext x='60' y='40' text-anchor='middle' dominant-baseline='middle' fill='%23ffffff' font-size='12'%3E<%= program.type.replace('_', ' ') %>%3C/text%3E%3C/svg%3E" alt="<%= program.name %>" class="rounded-lg">
                     </div>
                   </div>
                 </div>
-
-                <!-- Program Card 2 - Health Checkup -->
-                <div class="carousel-slide flex-none w-full bg-gradient-to-r from-green-600 to-green-800 text-white p-8 rounded-xl">
-                  <div class="flex items-center justify-between">
-                    <div class="flex-1">
-                      <div class="flex items-center gap-3 mb-4">
-                        <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-                          </svg>
-                        </div>
-                        <div>
-                          <h3 class="text-2xl font-bold">Free Health Checkup</h3>
-                          <p class="text-green-100">Monthly Health Camps</p>
-                        </div>
-                      </div>
-                      <p class="text-green-50 mb-4">Comprehensive health screening including BP, diabetes, and basic blood tests for citizens above 35 years.</p>
-                      <div class="flex items-center gap-4 text-sm">
-                        <span class="bg-white/20 px-3 py-1 rounded-full">📍 Community Centers</span>
-                        <span class="bg-green-500 px-3 py-1 rounded-full">✅ Ongoing</span>
-                      </div>
-                    </div>
-                    <div class="ml-8">
-                      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='80' viewBox='0 0 120 80'%3E%3Crect width='120' height='80' fill='%23ffffff20' rx='8'/%3E%3Ctext x='60' y='40' text-anchor='middle' dominant-baseline='middle' fill='%23ffffff' font-size='12'%3EHealth Checkup%3C/text%3E%3C/svg%3E" alt="Health Checkup" class="rounded-lg">
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Program Card 3 - Maternal Health -->
-                <div class="carousel-slide flex-none w-full bg-gradient-to-r from-pink-600 to-pink-800 text-white p-8 rounded-xl">
-                  <div class="flex items-center justify-between">
-                    <div class="flex-1">
-                      <div class="flex items-center gap-3 mb-4">
-                        <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                          </svg>
-                        </div>
-                        <div>
-                          <h3 class="text-2xl font-bold">Maternal Health Program</h3>
-                          <p class="text-pink-100">Janani Suraksha Yojana</p>
-                        </div>
-                      </div>
-                      <p class="text-pink-50 mb-4">Free prenatal care, safe delivery services, and postnatal support for expecting mothers.</p>
-                      <div class="flex items-center gap-4 text-sm">
-                        <span class="bg-white/20 px-3 py-1 rounded-full">📍 Maternity Centers</span>
-                        <span class="bg-green-500 px-3 py-1 rounded-full">✅ 24/7 Available</span>
-                      </div>
-                    </div>
-                    <div class="ml-8">
-                      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='80' viewBox='0 0 120 80'%3E%3Crect width='120' height='80' fill='%23ffffff20' rx='8'/%3E%3Ctext x='60' y='40' text-anchor='middle' dominant-baseline='middle' fill='%23ffffff' font-size='12'%3EMaternal Care%3C/text%3E%3C/svg%3E" alt="Maternal Care" class="rounded-lg">
-                    </div>
-                  </div>
-                </div>
+                <% }); %>
 
               </div>
             </div>
@@ -541,11 +566,22 @@
 
             <!-- Dots Indicator -->
             <div class="flex justify-center space-x-2 mt-4">
-              <button onclick="goToSlide(0)" class="carousel-dot w-3 h-3 rounded-full bg-gray-400 hover:bg-gray-600 transition-colors duration-200"></button>
-              <button onclick="goToSlide(1)" class="carousel-dot w-3 h-3 rounded-full bg-gray-400 hover:bg-gray-600 transition-colors duration-200"></button>
-              <button onclick="goToSlide(2)" class="carousel-dot w-3 h-3 rounded-full bg-gray-400 hover:bg-gray-600 transition-colors duration-200"></button>
+              <% programs.forEach((program, index) => { %>
+              <button onclick="goToSlide(<%= index %>)" class="carousel-dot w-3 h-3 rounded-full bg-gray-400 hover:bg-gray-600 transition-colors duration-200"></button>
+              <% }); %>
             </div>
           </div>
+          <% } else { %>
+          <div class="p-6">
+            <div class="text-center py-12 bg-gray-50 rounded-xl">
+              <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+              </svg>
+              <p class="text-gray-600">No active health programs at the moment</p>
+              <p class="text-sm text-gray-500 mt-2">Check back later for new programs</p>
+            </div>
+          </div>
+          <% } %>
         </div>
       </div>
 
@@ -2587,41 +2623,10 @@
     }
   }
 
-  // Section Navigation
-  function showSection(section) {
-    // Hide all sections
-    document.querySelectorAll('.section-content').forEach(s => s.classList.add('hidden'));
-    
-    // Show selected section
-    const targetSection = document.getElementById('section-' + section);
-    if (targetSection) {
-      targetSection.classList.remove('hidden');
-    }
-    
-    // Update navigation active state
-    const navLink = document.querySelector(`[href="#${section}"]`);
-    if (navLink) {
-      setActiveNav(navLink);
-    }
-    
-    // Initialize map if map section
-    if (section === 'map') {
-      initMap();
-    }
-    
-    // Reinitialize charts if analytics section
-    if (section === 'analytics') {
-      setTimeout(() => {
-        // Reset flag to allow reinitializing charts
-        chartsInitialized = false;
-        // Destroy and recreate charts
-        initCharts();
-      }, 150);
-    }
-    
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  // Section Navigation - moved to head for early availability
+  // function showSection(section) {
+  //   ... now defined in <head> section ...
+  // }
 
   // Map Initialization
   let map = null;
@@ -3743,17 +3748,10 @@
     showSection('home');
   });
   
-  // Set active navigation item
-  function setActiveNav(element) {
-    document.querySelectorAll('.nav-item').forEach(item => {
-      item.classList.remove('active');
-      item.style.borderBottom = '3px solid transparent';
-    });
-    if (element) {
-      element.classList.add('active');
-      element.style.borderBottom = '3px solid #f39c12';
-    }
-  }
+  // Set active navigation item - moved to head for early availability
+  // function setActiveNav(element) {
+  //   ... now defined in <head> section ...
+  // }
   
   // Toggle mobile menu
   function toggleMobileMenu() {
@@ -4112,14 +4110,14 @@
 <!-- Carousel JavaScript -->
 <script>
   let currentSlide = 0;
-  const totalSlides = 3;
+  const totalSlides = document.querySelectorAll('.carousel-slide').length;
   let autoSlideInterval;
 
   function updateCarousel() {
     const carousel = document.getElementById('programsCarousel');
     const dots = document.querySelectorAll('.carousel-dot');
     
-    if (carousel) {
+    if (carousel && totalSlides > 0) {
       carousel.style.transform = `translateX(-${currentSlide * 100}%)`;
       
       // Update dots
@@ -4131,25 +4129,33 @@
   }
 
   function nextSlide() {
-    currentSlide = (currentSlide + 1) % totalSlides;
-    updateCarousel();
-    resetAutoSlide();
+    if (totalSlides > 0) {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      updateCarousel();
+      resetAutoSlide();
+    }
   }
 
   function previousSlide() {
-    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-    updateCarousel();
-    resetAutoSlide();
+    if (totalSlides > 0) {
+      currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+      updateCarousel();
+      resetAutoSlide();
+    }
   }
 
   function goToSlide(index) {
-    currentSlide = index;
-    updateCarousel();
-    resetAutoSlide();
+    if (totalSlides > 0) {
+      currentSlide = index;
+      updateCarousel();
+      resetAutoSlide();
+    }
   }
 
   function startAutoSlide() {
-    autoSlideInterval = setInterval(nextSlide, 3000); // 3 seconds
+    if (totalSlides > 1) {
+      autoSlideInterval = setInterval(nextSlide, 5000); // 5 seconds
+    }
   }
 
   function stopAutoSlide() {
@@ -4165,14 +4171,16 @@
 
   // Initialize carousel
   document.addEventListener('DOMContentLoaded', function() {
-    updateCarousel();
-    startAutoSlide();
-    
-    // Pause auto-slide on hover
-    const carouselContainer = document.querySelector('.carousel-container');
-    if (carouselContainer) {
-      carouselContainer.addEventListener('mouseenter', stopAutoSlide);
-      carouselContainer.addEventListener('mouseleave', startAutoSlide);
+    if (totalSlides > 0) {
+      updateCarousel();
+      startAutoSlide();
+      
+      // Pause auto-slide on hover
+      const carouselContainer = document.querySelector('.carousel-container');
+      if (carouselContainer) {
+        carouselContainer.addEventListener('mouseenter', stopAutoSlide);
+        carouselContainer.addEventListener('mouseleave', startAutoSlide);
+      }
     }
   });
 </script>

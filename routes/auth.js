@@ -105,9 +105,13 @@ router.post(
 
 // Role-based redirect
 router.get("/dashboard", (req, res) => {
-  if (req.user.role === "admin") return res.redirect("/admin/dashboard");
+  if (!req.user) return res.redirect("/login");
+  
+  if (req.user.role === "admin") return res.redirect("/admin");
   if (req.user.role === "hospital") return res.redirect("/hospital/dashboard");
-  return res.redirect("/citizen/dashboard");
+  if (req.user.role === "citizen") return res.redirect("/citizen/dashboard");
+  
+  return res.redirect("/login");
 });
 
 

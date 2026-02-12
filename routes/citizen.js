@@ -11,6 +11,7 @@ const Equipment = require("../models/Equipment");
 const Appointment = require("../models/Appointment");
 const User = require("../models/User");
 const Citizen = require("../models/Citizen");
+const Program = require("../models/Program");
 
 const { ensureCitizen } = require("../middleware/auth");
 const { uploadProfileImage, handleUploadError } = require("../middleware/upload");
@@ -142,6 +143,9 @@ router.get("/dashboard", ensureCitizen, async (req, res) => {
     const medicines = await Medicine.find().populate("hospital");
     const equipments = await Equipment.find().populate("hospital");
     const users = await User.find();
+    
+    // Fetch active programs
+    const programs = await Program.find({ status: 'active' }).sort({ createdAt: -1 });
 
     // ================= KPI CALCULATIONS =================
     
@@ -279,57 +283,76 @@ router.get("/dashboard", ensureCitizen, async (req, res) => {
     });
 
     // ================= RENDER DASHBOARD =================
-    res.render("dashboards/citizen", {
-      user: req.user,
-      citizen, // Citizen profile data for display
-      
-      // KPIs
-      kpis: {
-        activeOutbreaks: outbreaks.length,
-        bedOccupancyPercent,
-        criticalMedicineAlerts,
-        emergencyStatus,
-        totalHospitals: hospitals.length,
-        totalDoctors: doctors.length,
-        totalPatients: patients.length,
-        activePatients: activePatients.length,
-        activeVaccinationPrograms,
-        totalUsers: userStats.total,
-        citizenUsers: userStats.citizens
-      },
+    try {
+      console.log("✅ Rendering citizen dashboard with data...");
+      res.render("dashboards/citizen", {
+        user: req.user,
+        citizen, // Citizen profile data for display
+        
+        // KPIs
+        kpis: {
+          activeOutbreaks: outbreaks.length,
+          bedOccupancyPercent,
+          criticalMedicineAlerts,
+          emergencyStatus,
+          totalHospitals: hospitals.length,
+          totalDoctors: doctors.length,
+          totalPatients: patients.length,
+          activePatients: activePatients.length,
+          activeVaccinationPrograms,
+          totalUsers: userStats.total,
+          citizenUsers: userStats.citizens
+        },
 
-      // Bed data
-      beds: {
-        total: totalBeds,
-        available: availableBeds,
-        general: generalBeds,
-        icu: icuBeds,
-        isolation: isolationBeds
-      },
+        // Bed data
+        beds: {
+          total: totalBeds,
+          available: availableBeds,
+          general: generalBeds,
+          icu: icuBeds,
+          isolation: isolationBeds
+        },
 
-      // Lists
-      outbreaks,
-      diseaseTrends,
-      wardData,
-      hospitalStats,
-      lowStockMedicines,
+        // Lists
+        outbreaks,
+        diseaseTrends,
+        wardData,
+        hospitalStats,
+        lowStockMedicines,
+        
+        // Programs
+        programs,
 
-      // Equipment
-      equipment: {
-        working: workingEquipment,
-        maintenance: maintenanceEquipment,
-        outOfOrder: outOfOrderEquipment,
-        total: equipments.length
-      },
+        // Equipment
+        equipment: {
+          working: workingEquipment,
+          maintenance: maintenanceEquipment,
+          outOfOrder: outOfOrderEquipment,
+          total: equipments.length
+        },
 
-      // Raw data for charts
-      hospitals,
-      recentPatients
-    });
+        // Raw data for charts
+        hospitals,
+        recentPatients
+      });
+    } catch (renderError) {
+      console.error("❌ EJS Rendering Error:", renderError);
+      console.error("Stack:", renderError.stack);
+      res.status(500).send(`
+        <h1>Dashboard Rendering Error</h1>
+        <pre>${renderError.message}</pre>
+        <pre>${renderError.stack}</pre>
+      `);
+    }
 
   } catch (err) {
-    console.error("Citizen Dashboard Error:", err);
-    res.status(500).send("Error loading dashboard");
+    console.error("❌ Citizen Dashboard Error:", err);
+    console.error("Stack:", err.stack);
+    res.status(500).send(`
+      <h1>Error Loading Dashboard</h1>
+      <pre>${err.message}</pre>
+      <pre>${err.stack}</pre>
+    `);
   }
 });
 

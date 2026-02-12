@@ -1,0 +1,39 @@
+<nav class="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-slate-200/60">
+    <div class="w-full px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center gap-8">
+                <div class="flex items-center gap-4 cursor-pointer" onclick="window.location.href='/admin'">
+                    <div class="h-9 w-9 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                        <span class="text-white font-bold text-xl">S</span>
+                    </div>
+                    <span class="font-bold text-slate-800 text-lg tracking-tight">SMC Control Panel</span>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-1">
+                    <a href="/admin" class="px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                        Home
+                    </a>
+                    <a href="/admin/city-analytics" class="px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                        City Analytics
+                    </a>
+                    <a href="/admin/hospital-analytics" class="px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                        Hospital Analytics
+                    </a>
+                    <a href="/admin/programs" class="px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                        Programs
+                    </a>
+                    <a href="/admin/alerts" class="px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                        Alerts
+                    </a>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <span class="hidden sm:inline text-sm text-slate-600">Welcome, <%= user.name %></span>
+                <a href="/logout" class="px-5 py-2 text-xs font-bold text-white bg-slate-900 rounded-full hover:bg-emerald-600 shadow-md hover:shadow-lg transition-all duration-200">
+                    Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,308 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8 px-4">
+    <div class="max-w-4xl mx-auto">
+        
+        <!-- Program Banner -->
+        <div class="mb-8 rounded-2xl overflow-hidden shadow-lg">
+            <div class="relative h-64 bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-500">
+                <!-- Replace with actual program image -->
+                <div class="absolute inset-0 flex items-center justify-center text-white">
+                    <div class="text-center">
+                        <svg class="w-20 h-20 mx-auto mb-4 opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                        <h1 class="text-4xl font-bold mb-2">COVID-19 Vaccination Drive</h1>
+                        <p class="text-xl text-white/90">2026 Campaign</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 border-t-4 border-blue-500">
+                <div class="flex items-center justify-between flex-wrap gap-4">
+                    <div>
+                        <p class="text-sm text-slate-600 mb-1"><strong>Duration:</strong> Jan 15, 2026 - Mar 31, 2026</p>
+                        <p class="text-sm text-slate-600"><strong>Available at:</strong> 12 Municipal Health Centers</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="text-center">
+                            <p class="text-2xl font-bold text-blue-600">2,847</p>
+                            <p class="text-xs text-slate-600">Already Enrolled</p>
+                        </div>
+                        <div class="w-px h-12 bg-slate-200"></div>
+                        <div class="text-center">
+                            <p class="text-2xl font-bold text-emerald-600">FREE</p>
+                            <p class="text-xs text-slate-600">No Cost</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Program Details -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Program Details
+            </h2>
+            <div class="prose max-w-none text-slate-600">
+                <p>Free COVID-19 booster shots for all citizens above 18 years. Walk-in facility available at all municipal health centers across Solapur.</p>
+                
+                <h3 class="text-lg font-semibold text-slate-800 mt-4 mb-2">Eligibility:</h3>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>Age: 18 years and above</li>
+                    <li>Resident of Solapur</li>
+                    <li>Previous vaccination records (if any)</li>
+                </ul>
+
+                <h3 class="text-lg font-semibold text-slate-800 mt-4 mb-2">What to Bring:</h3>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>Valid ID Proof (Aadhar Card, Voter ID, etc.)</li>
+                    <li>Previous vaccination certificate (if applicable)</li>
+                    <li>Medical history documents (if any)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Application Form -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-slate-200">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Apply for Program
+                </h2>
+                <p class="text-sm text-slate-600 mt-2">Fill in your details to register for this program</p>
+            </div>
+
+            <form class="p-6" method="POST" action="/citizen/program-apply">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- Full Name -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">
+                            Full Name <span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            name="fullName"
+                            placeholder="Enter your full name"
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            required
+                        >
+                    </div>
+
+                    <!-- Date of Birth -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">
+                            Date of Birth <span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="date" 
+                            name="dob"
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            required
+                        >
+                    </div>
+
+                    <!-- Gender -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">
+                            Gender <span class="text-red-500">*</span>
+                        </label>
+                        <select 
+                            name="gender"
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            required
+                        >
+                            <option value="">Select gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <!-- Mobile Number -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">
+                            Mobile Number <span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="tel" 
+                            name="mobile"
+                            placeholder="+91 9876543210"
+                            pattern="[0-9]{10}"
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            required
+                        >
+                    </div>
+
+                    <!-- Email Address -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">
+                            Email Address
+                        </label>
+                        <input 
+                            type="email" 
+                            name="email"
+                            placeholder="your.email@example.com"
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                    </div>
+
+                    <!-- Aadhar Number -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">
+                            Aadhar Number <span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            name="aadhar"
+                            placeholder="XXXX-XXXX-XXXX"
+                            pattern="[0-9]{12}"
+                            maxlength="12"
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            required
+                        >
+                    </div>
+
+                    <!-- Address -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">
+                            Full Address <span class="text-red-500">*</span>
+                        </label>
+                        <textarea 
+                            name="address"
+                            placeholder="Enter your complete residential address"
+                            rows="3"
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                            required
+                        ></textarea>
+                    </div>
+
+                    <!-- Preferred Center -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">
+                            Preferred Health Center <span class="text-red-500">*</span>
+                        </label>
+                        <select 
+                            name="center"
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            required
+                        >
+                            <option value="">Select center</option>
+                            <option value="center1">SMC Health Center - Zone 1</option>
+                            <option value="center2">SMC Health Center - Zone 2</option>
+                            <option value="center3">SMC Health Center - Zone 3</option>
+                            <option value="center4">SMC Health Center - Zone 4</option>
+                            <option value="center5">SMC Health Center - Zone 5</option>
+                            <option value="center6">Civil Hospital</option>
+                            <option value="center7">District Hospital</option>
+                        </select>
+                    </div>
+
+                    <!-- Preferred Date -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">
+                            Preferred Date <span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="date" 
+                            name="preferredDate"
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            required
+                        >
+                    </div>
+
+                    <!-- Previous Vaccination -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">
+                            Previous COVID-19 Vaccination History
+                        </label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="previousVaccination" value="none" class="mr-2" checked>
+                                <span class="text-sm text-slate-700">No previous vaccination</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="previousVaccination" value="partial" class="mr-2">
+                                <span class="text-sm text-slate-700">Partially vaccinated (1 dose)</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="previousVaccination" value="full" class="mr-2">
+                                <span class="text-sm text-slate-700">Fully vaccinated (2 doses)</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="previousVaccination" value="booster" class="mr-2">
+                                <span class="text-sm text-slate-700">Booster received</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Medical Conditions -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">
+                            Any Medical Conditions or Allergies?
+                        </label>
+                        <textarea 
+                            name="medicalConditions"
+                            placeholder="Please mention any medical conditions, allergies, or concerns (Optional)"
+                            rows="3"
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        ></textarea>
+                    </div>
+
+                    <!-- Terms and Conditions -->
+                    <div class="md:col-span-2">
+                        <label class="flex items-start">
+                            <input type="checkbox" name="terms" class="mt-1 mr-3" required>
+                            <span class="text-sm text-slate-700">
+                                I hereby confirm that the information provided above is accurate and complete. I understand and agree to the 
+                                <a href="#" class="text-blue-600 hover:underline">terms and conditions</a> of this program.
+                            </span>
+                        </label>
+                    </div>
+
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex items-center justify-between mt-8 pt-6 border-t border-slate-200">
+                    <a 
+                        href="/citizen/programs" 
+                        class="px-6 py-2.5 border border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-colors"
+                    >
+                        ← Back to Programs
+                    </a>
+                    <button 
+                        type="submit"
+                        class="px-8 py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 shadow-lg shadow-blue-500/30"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Submit Application
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-5">
+            <div class="flex items-start gap-3">
+                <svg class="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                    <h3 class="font-semibold text-blue-900 mb-2">Important Information</h3>
+                    <ul class="text-sm text-blue-800 space-y-1">
+                        <li>• You will receive an SMS confirmation with appointment details</li>
+                        <li>• Please arrive 15 minutes before your scheduled time</li>
+                        <li>• Carry all required documents for verification</li>
+                        <li>• For any queries, contact helpline: 1800-XXX-XXXX</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
