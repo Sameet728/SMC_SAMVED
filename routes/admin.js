@@ -610,6 +610,37 @@ router.get("/programs/:programId/applications/:applicationId", ensureAdmin, asyn
 });
 
 /**
+ * GET /admin/api/applications/:id
+ * Get application details as JSON (for modal display)
+ */
+router.get("/api/applications/:id", ensureAdmin, async (req, res) => {
+  try {
+    const application = await ProgramApplication.findById(req.params.id)
+      .populate('userId', 'name email')
+      .populate('citizen')
+      .populate('reviewedBy', 'name');
+    
+    if (!application) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Application not found" 
+      });
+    }
+    
+    res.json({ 
+      success: true, 
+      application 
+    });
+  } catch (error) {
+    console.error("Error fetching application:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Failed to fetch application details" 
+    });
+  }
+});
+
+/**
  * PATCH /admin/applications/:id/status
  * Update application status (approve/reject)
  */

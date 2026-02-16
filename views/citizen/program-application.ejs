@@ -36,9 +36,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
                 <div>
-                    <h3 class="font-bold text-emerald-900 mb-1">Application Already Submitted</h3>
-                    <p class="text-sm text-emerald-700">You have already applied for this program on <%= new Date(existingApplication.applicationDate).toLocaleDateString() %>.</p>
-                    <p class="text-sm text-emerald-700 mt-2">Application Status: <span class="font-semibold capitalize"><%= existingApplication.status %></span></p>
+                    <h3 class="font-bold text-emerald-900 mb-1">✅ Registration Completed</h3>
+                    <p class="text-sm text-emerald-700">You have successfully registered for this program on <%= new Date(existingApplication.applicationDate).toLocaleDateString() %>.</p>
+                    <p class="text-sm text-emerald-700 mt-2">You will receive a notification on the program date. Check your notifications section for updates.</p>
                 </div>
             </div>
         </div>
@@ -102,7 +102,7 @@
                 <p class="text-sm text-slate-600 mt-2">Fill in your details to register for this program</p>
             </div>
 
-            <form id="programApplicationForm" class="p-6">
+            <form id="programApplicationForm" onsubmit="handleFormSubmit(event); return false;" class="p-6">
                 <input type="hidden" name="programId" value="<%= program._id %>">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -448,7 +448,8 @@
                 <div>
                     <h3 class="font-semibold text-blue-900 mb-2">Important Information</h3>
                     <ul class="text-sm text-blue-800 space-y-1">
-                        <li>• You will receive confirmation after admin approval</li>
+                        <li>• Registration will be completed immediately upon submission</li>
+                        <li>• You will receive a notification on the program date</li>
                         <li>• Please carry all required documents for verification</li>
                         <li>• For any queries, contact: <%= program.contactNumber || '9552032489' %></li>
                     </ul>
@@ -470,43 +471,52 @@
 </div>
 
 <script>
-document.getElementById('programApplicationForm')?.addEventListener('submit', async (e) => {
+function handleFormSubmit(e) {
     e.preventDefault();
+    e.stopPropagation();
     
-    const submitBtn = e.target.querySelector('button[type="submit"]');
+    console.log('🚀 Form submit intercepted');
+    
+    const form = document.getElementById('programApplicationForm');
+    const submitBtn = form.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Submitting...';
     
-    const formData = new FormData(e.target);
+    const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
     
-    try {
-        const response = await fetch('/citizen/program-apply', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
-        
-        const result = await response.json();
+    console.log('📤 Submitting:', data);
+    
+    fetch('/citizen/program-apply', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        console.log('✅ Response:', result);
         
         if (result.success) {
             alert('✅ ' + result.message);
-            window.location.href = '/citizen/programs';
+            window.location.href = '/citizen/dashboard#programs';
         } else {
             alert('❌ ' + (result.error || 'Failed to submit application'));
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
         }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('❌ An error occurred. Please try again.');
+    })
+    .catch(error => {
+        console.error('❌ Error:', error);
+        alert('❌ An error occurred: ' + error.message);
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;
-    }
-});
+    });
+    
+    return false;
+}
 </script>
 </body>
 </html>

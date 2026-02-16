@@ -12,6 +12,7 @@ const Appointment = require("../models/Appointment");
 const User = require("../models/User");
 const Citizen = require("../models/Citizen");
 const Program = require("../models/Program");
+const Notification = require("../models/Notification");
 
 const { ensureCitizen } = require("../middleware/auth");
 const { uploadProfileImage, handleUploadError } = require("../middleware/upload");
@@ -187,14 +188,21 @@ router.get("/program-apply/:id", ensureCitizen, async (req, res) => {
  */
 router.post("/program-apply", ensureCitizen, async (req, res) => {
   try {
+    console.log("📝 Program application submission started");
+    console.log("User ID:", req.user._id);
+    console.log("Request body:", JSON.stringify(req.body, null, 2));
+    
     const citizen = await Citizen.findOne({ userId: req.user._id });
     
     if (!citizen) {
+      console.log("❌ Citizen profile not found");
       return res.status(400).json({ 
         success: false, 
         error: "Please complete your profile first" 
       });
     }
+    
+    console.log("✅ Citizen profile found:", citizen.fullName);
     
     // Check if already applied for this program
     const existingApplication = await ProgramApplication.findOne({
@@ -203,6 +211,7 @@ router.post("/program-apply", ensureCitizen, async (req, res) => {
     });
     
     if (existingApplication) {
+      console.log("⚠️ User already applied for this program");
       return res.status(400).json({
         success: false,
         error: "You have already applied for this program"
@@ -213,7 +222,9 @@ router.post("/program-apply", ensureCitizen, async (req, res) => {
     const dob = new Date(req.body.dateOfBirth);
     const age = Math.floor((Date.now() - dob.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
     
-    // Create application
+    console.log("📋 Creating application with data...");
+    
+    // Create application with approved status (no admin approval needed)
     const application = new ProgramApplication({
       program: req.body.programId,
       citizen: citizen._id,
@@ -223,45 +234,83 @@ router.post("/program-apply", ensureCitizen, async (req, res) => {
       age: age,
       gender: req.body.gender,
       mobileNumber: req.body.mobileNumber,
-      email: req.body.email,
+      email: req.body.email || "",
       address: {
         street: req.body.street,
         area: req.body.area,
         ward: req.body.ward,
         pincode: req.body.pincode
       },
-      aadharNumber: req.body.aadharNumber,
-      bloodGroup: req.body.bloodGroup,
-      medicalHistory: req.body.medicalHistory,
-      allergies: req.body.allergies,
-      currentMedications: req.body.currentMedications,
-      previousVaccinations: req.body.previousVaccinations,
-      preferredCenter: req.body.preferredCenter,
-      preferredDate: req.body.preferredDate,
+      aadharNumber: req.body.aadharNumber || "",
+      bloodGroup: req.body.bloodGroup || "Not Known",
+      medicalHistory: req.body.medicalHistory || "",
+      allergies: req.body.allergies || "",
+      currentMedications: req.body.currentMedications || "",
+      previousVaccinations: req.body.previousVaccinations || "",
+      preferredCenter: req.body.preferredCenter || "",
+      preferredDate: req.body.preferredDate || null,
       emergencyContact: {
-        name: req.body.emergencyContactName,
-        relation: req.body.emergencyContactRelation,
-        phone: req.body.emergencyContactPhone
-      }
+        name: req.body.emergencyContactName || "",
+        relation: req.body.emergencyContactRelation || "",
+        phone: req.body.emergencyContactPhone || ""
+      },
+      status: 'approved'
     });
     
+    console.log("💾 Saving application to database...");
     await application.save();
+    console.log("✅ Application saved successfully! ID:", application._id);
     
     // Update program enrolled count
+    console.log("📊 Updating program enrollment count...");
     await Program.findByIdAndUpdate(req.body.programId, {
       $inc: { enrolled: 1 }
     });
+    console.log("✅ Program enrollment count updated");
+
+    // Get the program details to create notification with program date
+    const program = await Program.findById(req.body.programId);
     
+    // Create a notification scheduled for the program start date
+    if (program) {
+      console.log("🔔 Creating notification for program:", program.name);
+      const notification = new Notification({
+        type: "program_reminder",
+        priority: "medium",
+        title: `Reminder: ${program.name}`,
+        message: `Your registered program "${program.name}" is scheduled for today! Location: ${program.locations}. Please check the program details for more information.`,
+        targetAudience: "specific_users",
+        targetUsers: [req.user._id],
+        scheduledFor: program.startDate,
+        relatedEntity: {
+          entityType: "program",
+          entityId: program._id
+        },
+        isRead: false,
+        isBroadcast: false
+      });
+      
+      await notification.save();
+      console.log(`✅ Program reminder notification created for ${req.user.name} on ${program.startDate}`);
+    }
+    
+    console.log("✅ Program application completed successfully!");
     res.json({ 
       success: true, 
-      message: "Application submitted successfully!",
+      message: "Registration completed successfully! You will receive a notification on the program date.",
       applicationId: application._id
     });
   } catch (error) {
     console.error("❌ Error submitting application:", error);
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+    console.error("Error stack:", error.stack);
+    
+    // Send detailed error message for debugging
     res.status(500).json({ 
       success: false, 
-      error: "Failed to submit application. Please try again." 
+      error: error.message || "Failed to submit application. Please try again.",
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 });
@@ -294,6 +343,11 @@ router.get("/dashboard", ensureCitizen, async (req, res) => {
     
     // Fetch active programs
     const programs = await Program.find({ status: 'active' }).sort({ createdAt: -1 });
+    
+    // Fetch user's applied programs with program details
+    const appliedPrograms = await ProgramApplication.find({ userId: req.user._id })
+      .populate('program')
+      .sort({ applicationDate: -1 });
 
     // ================= KPI CALCULATIONS =================
     
@@ -470,6 +524,7 @@ router.get("/dashboard", ensureCitizen, async (req, res) => {
         
         // Programs
         programs,
+        appliedPrograms,
 
         // Equipment
         equipment: {
@@ -743,6 +798,121 @@ router.get('/doctors/:hospitalId', ensureCitizen, async (req, res) => {
   } catch (error) {
     console.error('Doctors error:', error);
     res.status(500).json({ error: 'Failed to fetch doctors' });
+  }
+});
+
+// =====================================================
+// NOTIFICATIONS ROUTES
+// =====================================================
+
+/**
+ * GET /citizen/notifications
+ * Get all notifications for the current citizen
+ * Only shows notifications that are scheduled for today or earlier
+ */
+router.get('/notifications', ensureCitizen, async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Start of today
+    
+    // Fetch notifications for this user that are:
+    // 1. Targeted to this specific user, OR
+    // 2. Broadcast to all, OR  
+    // 3. Targeted to user's ward
+    const citizen = await Citizen.findOne({ userId: req.user._id });
+    
+    const notifications = await Notification.find({
+      $and: [
+        {
+          $or: [
+            { targetUsers: req.user._id },
+            { targetAudience: 'all' },
+            { targetAudience: 'ward', ward: citizen?.address?.ward }
+          ]
+        },
+        {
+          $or: [
+            { scheduledFor: { $exists: false } }, // No schedule, show immediately
+            { scheduledFor: { $lte: today } } // Scheduled for today or earlier
+          ]
+        }
+      ]
+    })
+    .populate('relatedEntity.entityId')
+    .sort({ createdAt: -1, priority: -1 })
+    .limit(50);
+    
+    res.json({ 
+      success: true, 
+      notifications,
+      unreadCount: notifications.filter(n => !n.isRead).length
+    });
+  } catch (error) {
+    console.error('❌ Error fetching notifications:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to fetch notifications' 
+    });
+  }
+});
+
+/**
+ * PUT /citizen/notifications/:id/read
+ * Mark a notification as read
+ */
+router.put('/notifications/:id/read', ensureCitizen, async (req, res) => {
+  try {
+    const notification = await Notification.findByIdAndUpdate(
+      req.params.id,
+      { isRead: true },
+      { new: true }
+    );
+    
+    if (!notification) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Notification not found' 
+      });
+    }
+    
+    res.json({ 
+      success: true, 
+      notification 
+    });
+  } catch (error) {
+    console.error('❌ Error marking notification as read:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to update notification' 
+    });
+  }
+});
+
+/**
+ * DELETE /citizen/notifications/:id
+ * Delete a notification
+ */
+router.delete('/notifications/:id', ensureCitizen, async (req, res) => {
+  try {
+    const notification = await Notification.findByIdAndDelete(req.params.id);
+    
+    if (!notification) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Notification not found' 
+      });
+    }
+    
+    res.json({ 
+      success: true, 
+      message: 'Notification deleted successfully' 
+    });
+  } catch (error) {
+    console.error('❌ Error deleting notification:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to delete notification' 
+    });
   }
 });
 

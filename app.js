@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 
 const connectDB = require("./config/db");
 const User = require("./models/User");
+const { initializeDailyScheduler } = require("./utils/notificationScheduler");
 
 const app = express();
 connectDB();
@@ -88,4 +89,12 @@ app.use("/hospital", require("./routes/hospital"));
 app.use("/citizen", require("./routes/citizen"));
 
 const PORT = 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  
+  // Initialize notification scheduler after server starts
+  setTimeout(() => {
+    initializeDailyScheduler();
+    console.log('✅ Notification scheduler initialized');
+  }, 2000);
+});

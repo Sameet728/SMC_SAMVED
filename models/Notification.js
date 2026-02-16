@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const NotificationSchema = new mongoose.Schema({
   type: {
     type: String,
-    enum: ["outbreak_alert", "vaccination", "emergency", "medicine_stock", "appointment", "general"],
+    enum: ["outbreak_alert", "vaccination", "emergency", "medicine_stock", "appointment", "general", "program_reminder"],
     required: true,
   },
 
@@ -64,11 +64,16 @@ const NotificationSchema = new mongoose.Schema({
   relatedEntity: {
     entityType: {
       type: String,
-      enum: ["outbreak", "appointment", "hospital", "medicine"],
+      enum: ["outbreak", "appointment", "hospital", "medicine", "program"],
     },
     entityId: {
       type: mongoose.Schema.Types.ObjectId,
     },
+  },
+
+  // For program notifications: date to show the notification
+  scheduledFor: {
+    type: Date,
   },
 }, {
   timestamps: true,

@@ -110,8 +110,8 @@ const programApplicationSchema = new mongoose.Schema({
   // Application Status
   status: {
     type: String,
-    enum: ['pending', 'approved', 'rejected', 'completed'],
-    default: 'pending'
+    enum: ['approved', 'completed'],
+    default: 'approved'
   },
   applicationDate: {
     type: Date,
